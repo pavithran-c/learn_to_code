@@ -10,13 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-java": "^6.0.2",
+    "@codemirror/lang-javascript": "^6.2.4",
+    "@codemirror/lang-python": "^6.2.1",
     "@tailwindcss/vite": "^4.1.11",
+    "@uiw/codemirror-themes-all": "^4.24.1",
+    "@uiw/react-codemirror": "^4.24.1",
     "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.7.0",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.11",
+    "yjs": "^13.6.12",
+    "y-websocket": "^2.0.4",
+    "y-codemirror": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
