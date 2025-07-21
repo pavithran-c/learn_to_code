@@ -11,7 +11,6 @@ function App() {
       <Route path='/' element={
         <>
           <Home />
-          <Test />
         </>
       } />
       <Route path='/compiler' element={<Compiler />} />

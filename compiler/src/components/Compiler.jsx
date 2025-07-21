@@ -4,9 +4,35 @@ const Compiler = () => {
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('python');
   const [output, setOutput] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleRun = async () => {
-    setOutput('Code compilation feature coming soon!');
+    setLoading(true);
+    setOutput('Running...');
+    let endpoint = '';
+    if (language === 'python') endpoint = '/run/python';
+    else if (language === 'java') endpoint = '/run/java';
+    else {
+      setOutput('JavaScript execution is not supported in the backend.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const data = await res.json();
+      setOutput(
+        (data.stdout ? data.stdout : '') +
+        (data.stderr ? `\n${data.stderr}` : '')
+      );
+    } catch (err) {
+      setOutput('Error connecting to backend.');
+    }
+    setLoading(false);
   };
 
   return (
@@ -44,9 +70,10 @@ const Compiler = () => {
 
         <button 
           onClick={handleRun}
-          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 mb-6"
+          disabled={loading}
+          className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200 mb-6 disabled:opacity-60"
         >
-          Run Code
+          {loading ? 'Running...' : 'Run Code'}
         </button>
 
         <div>
