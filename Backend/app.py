@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-from Backend.Python_Compiler.python_executor import execute_python_code
-from Backend.Java_Compiler.java_executor import execute_java_code
+from Python_Compiler.python_executor import execute_python_code
+from Java_Compiler.java_executor import execute_java_code
 from flask_cors import CORS
 
 app = Flask(__name__)

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback, useMemo, lazy, Suspense } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Code, Play, Send, ChevronLeft, ChevronRight, Menu, X, Clock, CheckCircle, XCircle, Star, Flag, Copy, RotateCcw, Sun, Moon, Maximize, Minimize, BarChart2, FilePlus, Bug, Search, Sparkles } from 'lucide-react';
+import Compiler from './Compiler';
 
 // Simplified Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -267,72 +268,7 @@ const Test = () => {
 
             {/* Code Editor Area */}
             <section className={`w-1/2 ${isDarkMode ? 'bg-gray-900' : 'bg-white'} p-6 flex flex-col`}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Code Editor</h2>
-                <select
-                  value={language}
-                  onChange={(e) => {
-                    setLanguage(e.target.value);
-                    setCode(codeTemplates[e.target.value]);
-                  }}
-                  className={`border rounded-lg px-3 py-2 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-                >
-                  <option value="python">Python</option>
-                  <option value="java">Java</option>
-                  <option value="javascript">JavaScript</option>
-                </select>
-              </div>
-
-              <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className={`flex-1 border rounded-lg p-3 font-mono text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-                placeholder="Write your code here..."
-              />
-
-              <div className="mt-4">
-                <h4 className="text-lg font-semibold mb-2">Custom Input</h4>
-                <textarea
-                  rows={3}
-                  value={customInput}
-                  onChange={(e) => setCustomInput(e.target.value)}
-                  placeholder="Enter custom input here..."
-                  className={`w-full border rounded-lg p-3 font-mono ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-                />
-              </div>
-
-              <div className="flex space-x-4 mt-4">
-                <button
-                  onClick={handleRun}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
-                >
-                  <Play className="w-5 h-5" />
-                  <span>Run Code</span>
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2"
-                >
-                  <Send className="w-5 h-5" />
-                  <span>Submit</span>
-                </button>
-              </div>
-
-              {(output || error) && (
-                <div className="mt-4">
-                  <h3 className="text-lg font-semibold mb-2">Output</h3>
-                  {output && (
-                    <pre className={`bg-gray-100 dark:bg-gray-700 p-4 rounded-lg ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>
-                      {output}
-                    </pre>
-                  )}
-                  {error && (
-                    <pre className={`bg-red-50 dark:bg-red-900 p-4 rounded-lg mt-2 ${isDarkMode ? 'text-red-200' : 'text-red-600'}`}>
-                      {error}
-                    </pre>
-                  )}
-                </div>
-              )}
+              <Compiler initialCode={code} initialLanguage={language} />
             </section>
           </div>
         </div>
