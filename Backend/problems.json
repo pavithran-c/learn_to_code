@@ -1,0 +1,77 @@
+[
+  {
+    "id": 1,
+    "title": "Sum of Two Numbers",
+    "description": "Write a function that returns the sum of two numbers.",
+    "difficulty": "easy",
+    "starter_code": {
+      "python": "def sum_two(a, b):\n    # your code here",
+      "java": "public class Solution {\n    public int sumTwo(int a, int b) {\n        // your code here\n    }\n}"
+    },
+    "languages": ["python", "java"],
+    "test_cases": [
+  {"input": [2, 3], "output": 5, "type": "middle"},
+  {"input": [10, -2], "output": 8, "type": "edge"}
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Reverse a String",
+    "description": "Write a function to reverse a string.",
+    "difficulty": "easy",
+    "starter_code": {
+      "python": "def reverse_string(s):\n    # your code here",
+      "java": "public class Solution {\n    public String reverseString(String s) {\n        // your code here\n    }\n}"
+    },
+    "languages": ["python", "java"],
+    "test_cases": [
+  {"input": ["hello"], "output": "olleh", "type": "middle"},
+  {"input": ["world"], "output": "dlrow", "type": "edge"}
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Find Maximum",
+    "description": "Write a function to find the maximum of a list of numbers.",
+    "difficulty": "medium",
+    "starter_code": {
+      "python": "def find_max(nums):\n    # your code here",
+      "java": "public class Solution {\n    public int findMax(int[] nums) {\n        // your code here\n    }\n}"
+    },
+    "languages": ["python", "java"],
+    "test_cases": [
+  {"input": [[1, 2, 3, 4]], "output": 4, "type": "middle"},
+  {"input": [[-1, -5, 0]], "output": 0, "type": "edge"}
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Fibonacci Number",
+    "description": "Write a function to return the nth Fibonacci number.",
+    "difficulty": "medium",
+    "starter_code": {
+      "python": "def fibonacci(n):\n    # your code here",
+      "java": "public class Solution {\n    public int fibonacci(int n) {\n        // your code here\n    }\n}"
+    },
+    "languages": ["python", "java"],
+    "test_cases": [
+  {"input": [5], "output": 5, "type": "middle"},
+  {"input": [10], "output": 55, "type": "timelimit"}
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Check Palindrome",
+    "description": "Write a function to check if a string is a palindrome.",
+    "difficulty": "hard",
+    "starter_code": {
+      "python": "def is_palindrome(s):\n    # your code here",
+      "java": "public class Solution {\n    public boolean isPalindrome(String s) {\n        // your code here\n    }\n}"
+    },
+    "languages": ["python", "java"],
+    "test_cases": [
+  {"input": ["racecar"], "output": true, "type": "middle"},
+  {"input": ["hello"], "output": false, "type": "space"}
+    ]
+  }
+]
