@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, CheckCircle, XCircle, Play, ArrowLeft, Code, BookOpen } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Play, Code, BookOpen } from 'lucide-react';
 
 const USER_ID = 'demo_user';
 
@@ -16,6 +16,11 @@ const ProgrammingQuiz = () => {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [score, setScore] = useState({ correct: 0, total: 0 });
   const [isAnswered, setIsAnswered] = useState(false);
+  
+  // Quiz session tracking
+  const [sessionStart, setSessionStart] = useState(null);
+  const [quizAttempts, setQuizAttempts] = useState([]);
+  const [currentQuestionId, setCurrentQuestionId] = useState('');
 
   // Timer effect
   useEffect(() => {
@@ -44,6 +49,7 @@ const ProgrammingQuiz = () => {
         const q = data.results[0];
         setQuestion(q.question);
         setCorrectAnswer(q.correct_answer);
+        setCurrentQuestionId(`prog_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
         
         // Shuffle answers
         const allAnswers = [...q.incorrect_answers, q.correct_answer];
@@ -51,6 +57,11 @@ const ProgrammingQuiz = () => {
         setDifficulty(q.difficulty);
         setStartTime(Date.now());
         setTimeElapsed(0);
+        
+        // Initialize session start time on first question
+        if (!sessionStart) {
+          setSessionStart(Date.now());
+        }
       }
     } catch (error) {
       console.error('Error fetching question:', error);
@@ -73,6 +84,19 @@ const ProgrammingQuiz = () => {
       total: prev.total + 1
     }));
     
+    // Record attempt for quiz evaluation
+    const attempt = {
+      question_id: currentQuestionId,
+      question_text: question,
+      user_answer: selectedAnswer,
+      correct_answer: correctAnswer,
+      difficulty: getDifficultyValue(difficulty),
+      time_spent: timeTaken,
+      question_type: 'multiple_choice'
+    };
+    
+    setQuizAttempts(prev => [...prev, attempt]);
+    
     setTimeout(() => {
       fetchQuestion();
     }, 3000);
@@ -87,6 +111,39 @@ const ProgrammingQuiz = () => {
     }
     return shuffled;
   }
+
+  const getDifficultyValue = (diffText) => {
+    const diffMap = { easy: 0.3, medium: 0.6, hard: 1.0 };
+    return diffMap[diffText?.toLowerCase()] || 0.5;
+  };
+
+  const submitQuizSession = async () => {
+    if (quizAttempts.length === 0) return;
+    
+    const sessionDuration = sessionStart ? Math.floor((Date.now() - sessionStart) / 1000) : 0;
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/quiz/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: USER_ID,
+          quiz_type: 'programming',
+          subject: 'Computer Science',
+          attempts: quizAttempts,
+          session_duration: sessionDuration
+        })
+      });
+      
+      if (response.ok) {
+        const evaluation = await response.json();
+        console.log('Quiz evaluation completed:', evaluation);
+        // You could show a modal with detailed results here
+      }
+    } catch (error) {
+      console.error('Error submitting quiz session:', error);
+    }
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -115,22 +172,13 @@ const ProgrammingQuiz = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Timer and Score Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => window.history.back()}
-                className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back
-              </button>
-              <div className="flex items-center space-x-3">
-                <Code className="w-6 h-6 text-blue-600" />
-                <h1 className="text-xl font-bold text-gray-900">Technical Quiz</h1>
-              </div>
+            <div className="flex items-center space-x-3">
+              <Code className="w-5 h-5 text-blue-600" />
+              <h1 className="text-lg font-semibold text-gray-900">Technical Quiz</h1>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-sm text-gray-600">
@@ -272,7 +320,19 @@ const ProgrammingQuiz = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-8 bg-white rounded-lg shadow-md p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Progress</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Session Progress</h3>
+            {quizAttempts.length >= 3 && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={submitQuizSession}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Submit Session for Evaluation
+              </motion.button>
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{score.correct}</div>
@@ -293,6 +353,11 @@ const ProgrammingQuiz = () => {
               <div className="text-sm text-gray-600">Current Time</div>
             </div>
           </div>
+          {quizAttempts.length > 0 && (
+            <div className="mt-4 text-sm text-gray-600 text-center">
+              {quizAttempts.length} questions completed • Session time: {formatTime(sessionStart ? Math.floor((Date.now() - sessionStart) / 1000) : 0)}
+            </div>
+          )}
         </motion.div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, CheckCircle, XCircle, Play, ArrowLeft, BookOpen, Database, Cpu, Network, Code2, Layers, Settings } from 'lucide-react';
+import { Clock, CheckCircle, XCircle, Play, BookOpen, Database, Cpu, Network, Code2, Layers, Settings } from 'lucide-react';
 import { recordQuizResult } from '../utils/dashboardStorage';
 
 // Import JSON data
@@ -26,6 +26,12 @@ const CoreSubjectsQuiz = () => {
   const [isAnswered, setIsAnswered] = useState(false);
   const [showSubjects, setShowSubjects] = useState(true);
   const [sessionStartTime, setSessionStartTime] = useState(null);
+  
+  // Quiz session tracking
+  const [quizAttempts, setQuizAttempts] = useState([]);
+  const [currentQuestionId, setCurrentQuestionId] = useState('');
+
+  const USER_ID = 'demo_user';
 
   // Map subject names to their data
   const subjectDataMap = {
@@ -87,6 +93,7 @@ const CoreSubjectsQuiz = () => {
     setShowSubjects(false);
     setSessionStartTime(Date.now()); // Record session start time
     setScore({ correct: 0, total: 0 }); // Reset score for new session
+    setQuizAttempts([]); // Reset quiz attempts for new subject
     fetchQuestion(subjectName);
   };
 
@@ -105,6 +112,7 @@ const CoreSubjectsQuiz = () => {
       setQuestion(q.question);
       setCorrectAnswer(q.correct);
       setChoices(shuffleArray([...q.choices]));
+      setCurrentQuestionId(`core_${subjectName.replace(/\s+/g, '_').toLowerCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
       setStartTime(Date.now());
       setTimeElapsed(0);
     }
@@ -116,6 +124,7 @@ const CoreSubjectsQuiz = () => {
     if (!selectedAnswer || isAnswered) return;
     setIsAnswered(true);
     
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
     const isCorrect = selectedAnswer === correctAnswer;
     const subjectData = subjectDataMap[currentSubject];
     const currentQ = subjectData?.questions.find(q => q.correct === correctAnswer);
@@ -129,6 +138,19 @@ const CoreSubjectsQuiz = () => {
       correct: prev.correct + (isCorrect ? 1 : 0),
       total: prev.total + 1
     }));
+    
+    // Record attempt for quiz evaluation
+    const attempt = {
+      question_id: currentQuestionId,
+      question_text: question,
+      user_answer: selectedAnswer,
+      correct_answer: correctAnswer,
+      difficulty: 0.5, // Default difficulty for core subjects
+      time_spent: timeTaken,
+      question_type: 'multiple_choice'
+    };
+    
+    setQuizAttempts(prev => [...prev, attempt]);
     
     setTimeout(() => {
       fetchQuestion();
@@ -149,6 +171,34 @@ const CoreSubjectsQuiz = () => {
     }
     return shuffled;
   }
+
+  const submitQuizSession = async () => {
+    if (quizAttempts.length === 0) return;
+    
+    const sessionDuration = sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0;
+    
+    try {
+      const response = await fetch('http://localhost:5000/api/quiz/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: USER_ID,
+          quiz_type: 'core_subjects',
+          subject: currentSubject,
+          attempts: quizAttempts,
+          session_duration: sessionDuration
+        })
+      });
+      
+      if (response.ok) {
+        const evaluation = await response.json();
+        console.log('Quiz evaluation completed:', evaluation);
+        // You could show a modal with detailed results here
+      }
+    } catch (error) {
+      console.error('Error submitting quiz session:', error);
+    }
+  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -177,22 +227,13 @@ const CoreSubjectsQuiz = () => {
   if (showSubjects) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        {/* Subject Selection Header */}
         <div className="bg-white shadow-sm border-b">
-          <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="max-w-6xl mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => window.history.back()}
-                  className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 mr-2" />
-                  Back
-                </button>
-                <div className="flex items-center space-x-3">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
-                  <h1 className="text-xl font-bold text-gray-900">Core Subjects Quiz</h1>
-                </div>
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-5 h-5 text-blue-600" />
+                <h1 className="text-lg font-semibold text-gray-900">Core Subjects Quiz</h1>
               </div>
               <div className="text-sm text-gray-600">
                 Choose a subject to start
@@ -257,19 +298,18 @@ const CoreSubjectsQuiz = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 py-4">
+        <div className="max-w-4xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <button
                 onClick={goBackToSubjects}
-                className="flex items-center text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                Back to Subjects
+                ← Back to Subjects
               </button>
               <div className="flex items-center space-x-3">
                 {iconComponents[subjectsConfig.subjects[currentSubject]?.icon]}
-                <h1 className="text-xl font-bold text-gray-900">{currentSubject}</h1>
+                <h1 className="text-lg font-semibold text-gray-900">{currentSubject}</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -412,7 +452,19 @@ const CoreSubjectsQuiz = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="mt-8 bg-white rounded-lg shadow-md p-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Session Progress</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Session Progress</h3>
+            {quizAttempts.length >= 3 && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={submitQuizSession}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Submit Session for Evaluation
+              </motion.button>
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">{score.correct}</div>
@@ -433,6 +485,11 @@ const CoreSubjectsQuiz = () => {
               <div className="text-sm text-gray-600">Time</div>
             </div>
           </div>
+          {quizAttempts.length > 0 && (
+            <div className="mt-4 text-sm text-gray-600 text-center">
+              {quizAttempts.length} questions completed • Session time: {formatTime(sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000) : 0)}
+            </div>
+          )}
         </motion.div>
       </div>
     </div>
