@@ -1,0 +1,54 @@
+{
+  "name": "Operating Systems",
+  "color": "purple",
+  "questions": [
+    {
+      "question": "What is a deadlock in operating systems?",
+      "choices": ["Process waiting indefinitely", "System crash", "Memory overflow", "CPU overload"],
+      "correct": "Process waiting indefinitely",
+      "explanation": "Deadlock occurs when processes wait indefinitely for resources held by each other."
+    },
+    {
+      "question": "Which scheduling algorithm gives the shortest average waiting time?",
+      "choices": ["FCFS", "SJF", "Round Robin", "Priority"],
+      "correct": "SJF",
+      "explanation": "Shortest Job First (SJF) provides the shortest average waiting time."
+    },
+    {
+      "question": "What is virtual memory?",
+      "choices": ["RAM extension", "Storage technique using disk", "Cache memory", "Register memory"],
+      "correct": "Storage technique using disk",
+      "explanation": "Virtual memory uses disk space to simulate additional RAM when physical memory is full."
+    },
+    {
+      "question": "What is a race condition?",
+      "choices": ["CPU competition", "Multiple processes accessing shared data", "Memory leak", "Process synchronization"],
+      "correct": "Multiple processes accessing shared data",
+      "explanation": "Race condition occurs when multiple processes access shared data simultaneously."
+    },
+    {
+      "question": "What does a semaphore control in OS?",
+      "choices": ["Process scheduling", "Memory allocation", "Access to shared resources", "File operations"],
+      "correct": "Access to shared resources",
+      "explanation": "Semaphores control access to shared resources by multiple processes."
+    },
+    {
+      "question": "What is the purpose of the kernel in an operating system?",
+      "choices": ["User interface", "Core system functions", "Application management", "File storage"],
+      "correct": "Core system functions",
+      "explanation": "The kernel manages core system functions like memory, processes, and hardware communication."
+    },
+    {
+      "question": "What is thrashing in virtual memory systems?",
+      "choices": ["Fast memory access", "Excessive page swapping", "Memory compression", "Cache optimization"],
+      "correct": "Excessive page swapping",
+      "explanation": "Thrashing occurs when the system spends more time swapping pages than executing processes."
+    },
+    {
+      "question": "Which IPC mechanism is fastest for communication between processes?",
+      "choices": ["Pipes", "Message Queues", "Shared Memory", "Sockets"],
+      "correct": "Shared Memory",
+      "explanation": "Shared memory is fastest as it doesn't require data copying between processes."
+    }
+  ]
+}

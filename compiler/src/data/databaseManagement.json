@@ -1,0 +1,54 @@
+{
+  "name": "Database Management",
+  "color": "orange",
+  "questions": [
+    {
+      "question": "What does ACID stand for in database transactions?",
+      "choices": ["Atomic, Consistent, Isolated, Durable", "Active, Complete, Independent, Distributed", "Accurate, Centralized, Integrated, Dynamic", "Automatic, Controlled, Individual, Dependent"],
+      "correct": "Atomic, Consistent, Isolated, Durable",
+      "explanation": "ACID properties ensure reliable database transactions: Atomicity, Consistency, Isolation, Durability."
+    },
+    {
+      "question": "What is normalization in databases?",
+      "choices": ["Data encryption", "Organizing data to reduce redundancy", "Creating backups", "Performance optimization"],
+      "correct": "Organizing data to reduce redundancy",
+      "explanation": "Normalization organizes database tables to minimize redundancy and dependency."
+    },
+    {
+      "question": "Which SQL command is used to retrieve data?",
+      "choices": ["INSERT", "UPDATE", "DELETE", "SELECT"],
+      "correct": "SELECT",
+      "explanation": "SELECT command is used to query and retrieve data from database tables."
+    },
+    {
+      "question": "What is a primary key?",
+      "choices": ["Encryption key", "Unique identifier for records", "Database password", "Table name"],
+      "correct": "Unique identifier for records",
+      "explanation": "Primary key uniquely identifies each record in a database table."
+    },
+    {
+      "question": "What is the purpose of indexing in databases?",
+      "choices": ["Data security", "Faster data retrieval", "Data compression", "Data validation"],
+      "correct": "Faster data retrieval",
+      "explanation": "Indexing creates data structures that speed up data retrieval operations."
+    },
+    {
+      "question": "What is a foreign key constraint?",
+      "choices": ["Prevents data deletion", "Links tables together", "Encrypts sensitive data", "Compresses table data"],
+      "correct": "Links tables together",
+      "explanation": "Foreign key constraints maintain referential integrity by linking related tables."
+    },
+    {
+      "question": "Which normal form eliminates transitive dependencies?",
+      "choices": ["1NF", "2NF", "3NF", "BCNF"],
+      "correct": "3NF",
+      "explanation": "Third Normal Form (3NF) eliminates transitive dependencies in database tables."
+    },
+    {
+      "question": "What is a database transaction?",
+      "choices": ["Single SQL query", "Group of related operations", "Database backup", "User authentication"],
+      "correct": "Group of related operations",
+      "explanation": "A transaction is a group of related database operations that must be executed as a single unit."
+    }
+  ]
+}

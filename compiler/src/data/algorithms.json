@@ -1,0 +1,54 @@
+{
+  "name": "Algorithms",
+  "color": "green",
+  "questions": [
+    {
+      "question": "Which algorithm is used to find the shortest path in a weighted graph?",
+      "choices": ["DFS", "BFS", "Dijkstra's Algorithm", "Linear Search"],
+      "correct": "Dijkstra's Algorithm",
+      "explanation": "Dijkstra's algorithm finds the shortest path from a source vertex to all other vertices."
+    },
+    {
+      "question": "What is the time complexity of Merge Sort?",
+      "choices": ["O(n)", "O(n log n)", "O(n²)", "O(2ⁿ)"],
+      "correct": "O(n log n)",
+      "explanation": "Merge Sort consistently performs in O(n log n) time for all cases."
+    },
+    {
+      "question": "Which approach does Dynamic Programming use?",
+      "choices": ["Divide and Conquer", "Greedy Method", "Memoization", "Backtracking"],
+      "correct": "Memoization",
+      "explanation": "Dynamic Programming uses memoization to store solutions to avoid recomputing."
+    },
+    {
+      "question": "What is the principle behind Greedy Algorithms?",
+      "choices": ["Global optimization", "Local optimal choice", "Divide problem", "Recursive solution"],
+      "correct": "Local optimal choice",
+      "explanation": "Greedy algorithms make locally optimal choices at each step."
+    },
+    {
+      "question": "Which sorting algorithm has the best average-case time complexity?",
+      "choices": ["Bubble Sort", "Selection Sort", "Quick Sort", "Insertion Sort"],
+      "correct": "Quick Sort",
+      "explanation": "Quick Sort has O(n log n) average-case time complexity, which is optimal for comparison-based sorts."
+    },
+    {
+      "question": "What is the time complexity of Binary Search?",
+      "choices": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+      "correct": "O(log n)",
+      "explanation": "Binary Search divides the search space in half at each step, resulting in O(log n) complexity."
+    },
+    {
+      "question": "Which algorithm technique is used in finding the longest common subsequence?",
+      "choices": ["Greedy", "Dynamic Programming", "Divide and Conquer", "Backtracking"],
+      "correct": "Dynamic Programming",
+      "explanation": "LCS problem has overlapping subproblems, making it ideal for dynamic programming approach."
+    },
+    {
+      "question": "What is the worst-case time complexity of Heap Sort?",
+      "choices": ["O(n)", "O(n log n)", "O(n²)", "O(2ⁿ)"],
+      "correct": "O(n log n)",
+      "explanation": "Heap Sort maintains O(n log n) complexity in all cases due to its heap structure."
+    }
+  ]
+}

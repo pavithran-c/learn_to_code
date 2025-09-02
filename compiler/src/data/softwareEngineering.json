@@ -1,0 +1,54 @@
+{
+  "name": "Software Engineering",
+  "color": "red",
+  "questions": [
+    {
+      "question": "What is the main principle of Agile methodology?",
+      "choices": ["Detailed documentation", "Iterative development", "Waterfall approach", "Top-down design"],
+      "correct": "Iterative development",
+      "explanation": "Agile emphasizes iterative development with frequent customer feedback and adaptation."
+    },
+    {
+      "question": "What does UML stand for?",
+      "choices": ["Universal Modeling Language", "Unified Modeling Language", "User Management Language", "Uniform Model Language"],
+      "correct": "Unified Modeling Language",
+      "explanation": "UML (Unified Modeling Language) is used for visualizing software system designs."
+    },
+    {
+      "question": "What is version control used for?",
+      "choices": ["Bug tracking", "Code compilation", "Managing code changes", "Performance testing"],
+      "correct": "Managing code changes",
+      "explanation": "Version control systems track and manage changes to source code over time."
+    },
+    {
+      "question": "What is unit testing?",
+      "choices": ["Testing entire system", "Testing individual components", "User acceptance testing", "Integration testing"],
+      "correct": "Testing individual components",
+      "explanation": "Unit testing involves testing individual components or modules in isolation."
+    },
+    {
+      "question": "What does SOLID principles help with?",
+      "choices": ["Database design", "Network security", "Object-oriented design", "Algorithm optimization"],
+      "correct": "Object-oriented design",
+      "explanation": "SOLID principles guide good object-oriented design and programming practices."
+    },
+    {
+      "question": "What is the purpose of code review?",
+      "choices": ["Performance testing", "Quality assurance", "Documentation", "Deployment"],
+      "correct": "Quality assurance",
+      "explanation": "Code review ensures code quality, catches bugs, and promotes knowledge sharing."
+    },
+    {
+      "question": "What is Continuous Integration (CI)?",
+      "choices": ["Manual testing", "Automated code merging and testing", "Database backup", "User training"],
+      "correct": "Automated code merging and testing",
+      "explanation": "CI automatically integrates code changes and runs tests to detect issues early."
+    },
+    {
+      "question": "Which design pattern ensures only one instance of a class exists?",
+      "choices": ["Factory", "Observer", "Singleton", "Strategy"],
+      "correct": "Singleton",
+      "explanation": "Singleton pattern restricts class instantiation to a single instance."
+    }
+  ]
+}

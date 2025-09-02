@@ -1,0 +1,34 @@
+{
+  "subjects": {
+    "Data Structures": {
+      "file": "dataStructures.json",
+      "icon": "Layers",
+      "description": "Arrays, Trees, Graphs, Stacks, Queues"
+    },
+    "Algorithms": {
+      "file": "algorithms.json",
+      "icon": "Code2",
+      "description": "Sorting, Searching, Graph Algorithms"
+    },
+    "Operating Systems": {
+      "file": "operatingSystems.json",
+      "icon": "Settings",
+      "description": "Processes, Memory, Scheduling, Deadlocks"
+    },
+    "Database Management": {
+      "file": "databaseManagement.json",
+      "icon": "Database",
+      "description": "SQL, Normalization, Transactions, Indexing"
+    },
+    "Computer Networks": {
+      "file": "computerNetworks.json",
+      "icon": "Network",
+      "description": "OSI Model, TCP/IP, Routing, Protocols"
+    },
+    "Software Engineering": {
+      "file": "softwareEngineering.json",
+      "icon": "Cpu",
+      "description": "SDLC, Testing, Design Patterns, Agile"
+    }
+  }
+}

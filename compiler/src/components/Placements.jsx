@@ -9,6 +9,7 @@ import {
 import CodingProblems from './CodingProblems';
 import CompetitiveQuiz from './CompetitiveQuiz';
 import ProgrammingQuiz from './ProgrammingQuiz';
+import CoreSubjectsQuiz from './CoreSubjectsQuiz';
 
 const placementCompanies = [
   {
@@ -77,6 +78,14 @@ const practiceCategories = [
     stats: { problems: 150, solved: 45 }
   },
   {
+    title: 'Core Subjects',
+    description: 'CS fundamentals: DSA, OS, DBMS, Networks',
+    icon: <BookOpen className="w-8 h-8" />,
+    component: 'coresubjects',
+    color: 'bg-gradient-to-r from-indigo-500 to-purple-600',
+    stats: { subjects: 6, questions: 180 }
+  },
+  {
     title: 'Aptitude Quiz',
     description: 'Quantitative, Logical & Verbal reasoning',
     icon: <BarChart2 className="w-8 h-8" />,
@@ -87,7 +96,7 @@ const practiceCategories = [
   {
     title: 'Technical Quiz',
     description: 'Programming concepts & theory',
-    icon: <BookOpen className="w-8 h-8" />,
+    icon: <Target className="w-8 h-8" />,
     component: 'technical',
     color: 'bg-gradient-to-r from-orange-500 to-red-600',
     stats: { topics: 25, completed: 12 }
@@ -172,7 +181,7 @@ const Placements = () => {
       {/* Practice Categories */}
       <motion.div variants={itemVariants} className="space-y-6">
         <h2 className="text-2xl font-bold text-gray-900">Practice Categories</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {practiceCategories.map((category, index) => (
             <motion.div
               key={index}
@@ -186,8 +195,8 @@ const Placements = () => {
                   {category.icon}
                   <ChevronRight className="w-6 h-6" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{category.title}</h3>
-                <p className="text-white/80">{category.description}</p>
+                <h3 className="text-lg font-bold mb-2">{category.title}</h3>
+                <p className="text-white/80 text-sm">{category.description}</p>
               </div>
               <div className="p-4 bg-gray-50">
                 <div className="flex justify-between items-center text-sm text-gray-600">
@@ -289,6 +298,8 @@ const Placements = () => {
     switch (activeView) {
       case 'coding':
         return <CodingProblems />;
+      case 'coresubjects':
+        return <CoreSubjectsQuiz />;
       case 'aptitude':
         return <CompetitiveQuiz />;
       case 'technical':

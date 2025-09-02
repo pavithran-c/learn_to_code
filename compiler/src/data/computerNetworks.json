@@ -1,0 +1,54 @@
+{
+  "name": "Computer Networks",
+  "color": "cyan",
+  "questions": [
+    {
+      "question": "What layer of OSI model handles routing?",
+      "choices": ["Physical Layer", "Data Link Layer", "Network Layer", "Transport Layer"],
+      "correct": "Network Layer",
+      "explanation": "Network Layer (Layer 3) is responsible for routing packets between networks."
+    },
+    {
+      "question": "What does TCP stand for?",
+      "choices": ["Transfer Control Protocol", "Transmission Control Protocol", "Transport Connection Protocol", "Terminal Control Protocol"],
+      "correct": "Transmission Control Protocol",
+      "explanation": "TCP (Transmission Control Protocol) provides reliable, ordered delivery of data."
+    },
+    {
+      "question": "What is the maximum number of hosts in a Class C network?",
+      "choices": ["254", "256", "512", "1024"],
+      "correct": "254",
+      "explanation": "Class C networks have 8 host bits, allowing 2^8-2 = 254 hosts (excluding network and broadcast)."
+    },
+    {
+      "question": "Which protocol is used for email transmission?",
+      "choices": ["HTTP", "FTP", "SMTP", "DNS"],
+      "correct": "SMTP",
+      "explanation": "SMTP (Simple Mail Transfer Protocol) is used for sending emails between servers."
+    },
+    {
+      "question": "What does DNS resolve?",
+      "choices": ["IP to MAC address", "Domain name to IP address", "Port to protocol", "URL to domain"],
+      "correct": "Domain name to IP address",
+      "explanation": "DNS (Domain Name System) translates domain names to IP addresses."
+    },
+    {
+      "question": "What is the difference between TCP and UDP?",
+      "choices": ["TCP is faster", "UDP is reliable", "TCP is connection-oriented", "UDP uses more bandwidth"],
+      "correct": "TCP is connection-oriented",
+      "explanation": "TCP is connection-oriented and reliable, while UDP is connectionless and faster."
+    },
+    {
+      "question": "Which layer of OSI model handles error detection and correction?",
+      "choices": ["Physical Layer", "Data Link Layer", "Network Layer", "Transport Layer"],
+      "correct": "Data Link Layer",
+      "explanation": "Data Link Layer (Layer 2) provides error detection and correction for the physical layer."
+    },
+    {
+      "question": "What is the purpose of ARP (Address Resolution Protocol)?",
+      "choices": ["Route packets", "Resolve IP to MAC address", "Encrypt data", "Compress packets"],
+      "correct": "Resolve IP to MAC address",
+      "explanation": "ARP resolves IP addresses to MAC addresses for local network communication."
+    }
+  ]
+}

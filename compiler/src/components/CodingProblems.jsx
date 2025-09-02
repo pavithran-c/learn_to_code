@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { recordCodingResult } from '../utils/dashboardStorage';
 
 const CodingProblems = () => {
   const [problems, setProblems] = useState([]);
@@ -12,6 +13,11 @@ const CodingProblems = () => {
   const [bottomHeight, setBottomHeight] = useState(30);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef(null);
+  
+  // Failure tracking states
+  const [problemAttempts, setProblemAttempts] = useState({});
+  const [startTime, setStartTime] = useState(null);
+  const [showRetakeOption, setShowRetakeOption] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:5000/api/problems')
@@ -29,6 +35,16 @@ const CodingProblems = () => {
     setCode(starter || '');
     setResults(null);
     setLanguage(lang);
+    setStartTime(Date.now()); // Track start time
+    setShowRetakeOption(false);
+    
+    // Initialize problem attempts if not exists
+    if (!problemAttempts[id]) {
+      setProblemAttempts(prev => ({
+        ...prev,
+        [id]: { failures: 0, totalTime: 0, lastAttempt: Date.now() }
+      }));
+    }
   };
 
   // Select a random problem by difficulty
@@ -39,7 +55,41 @@ const CodingProblems = () => {
     selectProblem(filtered[randomIdx].id, lang);
   };
 
+  // Retake current problem with fresh state
+  const retakeProblem = () => {
+    if (selected) {
+      // Reset the problem attempts for this problem
+      setProblemAttempts(prev => ({
+        ...prev,
+        [selected.id]: { failures: 0, totalTime: 0, lastAttempt: Date.now() }
+      }));
+      
+      // Reset UI state
+      setResults(null);
+      setShowRetakeOption(false);
+      setStartTime(Date.now());
+      
+      // Reset to starter code
+      let starter = selected.starter_code;
+      if (starter && typeof starter === 'object') starter = starter[language];
+      setCode(starter || '');
+    }
+  };
+
+  // Get current problem stats
+  const getCurrentProblemStats = () => {
+    if (!selected || !problemAttempts[selected.id]) return null;
+    const stats = problemAttempts[selected.id];
+    return {
+      failures: stats.failures,
+      timeSpent: Math.round(stats.totalTime),
+      canRetake: stats.failures >= 3 || stats.totalTime > 600
+    };
+  };
+
   const submitCode = async () => {
+    const timeSpent = startTime ? (Date.now() - startTime) / 1000 : 0; // Time in seconds
+    
     const res = await fetch('http://localhost:5000/api/submit_code', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -51,6 +101,47 @@ const CodingProblems = () => {
     });
     const data = await res.json();
     setResults(data);
+    
+    // Update problem attempts tracking
+    const problemId = selected.id;
+    const currentAttempts = problemAttempts[problemId] || { failures: 0, totalTime: 0, lastAttempt: Date.now() };
+    
+    if (!data.all_passed) {
+      // Failed attempt
+      const updatedAttempts = {
+        failures: currentAttempts.failures + 1,
+        totalTime: currentAttempts.totalTime + timeSpent,
+        lastAttempt: Date.now()
+      };
+      
+      setProblemAttempts(prev => ({
+        ...prev,
+        [problemId]: updatedAttempts
+      }));
+      
+      // Check if user qualifies for retake option
+      // Conditions: 3+ failures OR spent more than 10 minutes total
+      if (updatedAttempts.failures >= 3 || updatedAttempts.totalTime > 600) {
+        setShowRetakeOption(true);
+      }
+    } else {
+      // Successful attempt - reset tracking
+      setProblemAttempts(prev => ({
+        ...prev,
+        [problemId]: { failures: 0, totalTime: 0, lastAttempt: Date.now() }
+      }));
+      setShowRetakeOption(false);
+    }
+    
+    // Record coding result for dashboard
+    recordCodingResult(
+      selected.title || `Problem ${problemId}`,
+      data.all_passed,
+      (problemAttempts[problemId]?.failures || 0) + (data.all_passed ? 0 : 1),
+      timeSpent
+    );
+    
+    setStartTime(Date.now()); // Reset start time for next attempt
   };
 
   const getDifficultyColor = (diff) => {
@@ -294,6 +385,18 @@ const CodingProblems = () => {
                         )}
                       </div>
                       
+                      {/* Retake Notification */}
+                      {showRetakeOption && !results.all_passed && (
+                        <div className="bg-yellow-900/30 border border-yellow-600 rounded p-3 mb-4">
+                          <div className="flex items-center gap-2 text-yellow-400">
+                            <span>💡</span>
+                            <span className="text-sm">
+                              Having trouble? You can now <strong>retake</strong> this problem with a fresh start!
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="space-y-3">
                         {results.results.map((r, idx) => (
                           <div key={idx} className="bg-gray-900 rounded p-3 border-l-4 border-l-gray-600">
@@ -323,19 +426,43 @@ const CodingProblems = () => {
 
               {/* Action Buttons */}
               <div className="bg-gray-800 p-4 border-t border-gray-700 flex-shrink-0">
-                <div className="flex gap-3">
-                  <button
-                    onClick={submitCode}
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors font-medium"
-                  >
-                    ▶ Run
-                  </button>
-                  <button
-                    onClick={submitCode}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors font-medium"
-                  >
-                    Submit
-                  </button>
+                <div className="flex flex-col gap-3">
+                  {/* Problem Stats */}
+                  {getCurrentProblemStats() && (
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span>Attempts: {getCurrentProblemStats().failures}</span>
+                      <span>Time: {Math.floor(getCurrentProblemStats().timeSpent / 60)}m {getCurrentProblemStats().timeSpent % 60}s</span>
+                      {getCurrentProblemStats().canRetake && (
+                        <span className="text-yellow-400">⚡ Retake Available</span>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="flex gap-3">
+                    <button
+                      onClick={submitCode}
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition-colors font-medium"
+                    >
+                      ▶ Run
+                    </button>
+                    <button
+                      onClick={submitCode}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors font-medium"
+                    >
+                      Submit
+                    </button>
+                    
+                    {/* Retake Button - Show when conditions are met */}
+                    {showRetakeOption && (
+                      <button
+                        onClick={retakeProblem}
+                        className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded transition-colors font-medium flex items-center gap-2"
+                        title="Reset problem with fresh start"
+                      >
+                        🔄 Retake
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </>

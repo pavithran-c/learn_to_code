@@ -42,12 +42,24 @@ def submit_code():
     problem = next((p for p in problems if p['id'] == pid), None)
     if not problem:
         return jsonify({'error': 'Problem not found'}), 404
+    
+    # Get starter code for the specific language
+    starter_code = problem['starter_code']
+    if isinstance(starter_code, dict):
+        starter_code = starter_code.get(lang, '')
+    
     # Prepare code for execution
     results = []
     for tc in problem['test_cases']:
         # For Python, build code to run function and check output
         if lang == 'python':
-            func_name = problem['starter_code'].split('def ')[1].split('(')[0]
+            # Extract function name from starter code
+            if 'def ' in starter_code:
+                func_name = starter_code.split('def ')[1].split('(')[0]
+            else:
+                # Fallback: try to extract from user code
+                func_name = code.split('def ')[1].split('(')[0] if 'def ' in code else 'main'
+            
             test_code = code + f"\nresult = {func_name}(*{tc['input']})\nprint(result)"
             exec_result = execute_python_code(test_code)
             # Try to parse output
@@ -63,8 +75,40 @@ def submit_code():
                 'passed': passed,
                 'stderr': exec_result['stderr']
             })
+        elif lang == 'java':
+            # For Java, we need to modify the code to include test inputs
+            # Extract method name from starter code
+            if 'public ' in starter_code and '(' in starter_code:
+                method_match = starter_code.split('public ')[1].split('(')[0].split()[-1]
+                method_name = method_match
+            else:
+                method_name = 'solve'  # fallback method name
+            
+            # Create a test wrapper for Java
+            java_test_code = code + f"""
+public static void main(String[] args) {{
+    Solution sol = new Solution();
+    // Call the method with test inputs
+    {method_name}({', '.join(str(inp) for inp in tc['input'])});
+}}
+"""
+            # For now, let's use a simpler approach for Java
+            exec_result = execute_java_code(java_test_code)
+            try:
+                output = ast.literal_eval(exec_result['stdout'].strip()) if exec_result['stdout'].strip() else None
+            except:
+                output = exec_result['stdout'].strip()
+            passed = output == tc['output']
+            results.append({
+                'input': tc['input'],
+                'expected': tc['output'],
+                'output': output,
+                'passed': passed,
+                'stderr': exec_result['stderr']
+            })
         else:
-            results.append({'error': 'Only Python supported for now'})
+            results.append({'error': f'Language {lang} not supported yet'})
+    
     all_passed = all(r.get('passed', False) for r in results)
     return jsonify({'results': results, 'all_passed': all_passed})
 
