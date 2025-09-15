@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { 
   Code, Book, Trophy, Calendar, Users, Bell, Search, 
   BarChart2, Target, Clock, Star, Menu, X, Brain, FileText, 
-  Briefcase, Calculator, MessageSquare, Database 
+  Briefcase, Calculator, MessageSquare, Database, Home as HomeIcon
 } from 'lucide-react';
 import Compiler from './components/Compiler'
 // Exam and course data (same as previous)
@@ -129,56 +129,70 @@ const Home = () => {
       <header className="bg-white shadow-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="text-2xl font-bold text-blue-600"
-            >
-              ExamTrack
-            </motion.div>
-            <div className="hidden md:flex items-center space-x-6">
+            <Link to="/">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="text-2xl font-bold text-blue-600 cursor-pointer"
+              >
+                LearnToCode
+              </motion.div>
+            </Link>
+            <div className="hidden lg:flex items-center space-x-6">
               <Link to="/dashboard">
-                <motion.div whileHover={{ scale: 1.05 }} className="text-gray-600 hover:text-blue-600 cursor-pointer">
-                  Dashboard
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <BarChart2 className="w-4 h-4" />
+                  <span>Dashboard</span>
+                </motion.div>
+              </Link>
+              <Link to="/compiler">
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <Code className="w-4 h-4" />
+                  <span>Compiler</span>
+                </motion.div>
+              </Link>
+              <Link to="/problems">
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <FileText className="w-4 h-4" />
+                  <span>Problems</span>
                 </motion.div>
               </Link>
               <Link to="/evaluations">
-                <motion.div whileHover={{ scale: 1.05 }} className="text-gray-600 hover:text-blue-600 cursor-pointer">
-                  Evaluations
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <FileText className="w-4 h-4" />
+                  <span>Evaluations</span>
+                </motion.div>
+              </Link>
+              <Link to="/quiz">
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <Trophy className="w-4 h-4" />
+                  <span>Quiz</span>
                 </motion.div>
               </Link>
               <Link to="/placements">
-                <motion.div whileHover={{ scale: 1.05 }} className="text-gray-600 hover:text-blue-600 cursor-pointer">
-                  Placements
-                </motion.div>
-              </Link>
-              <Link to="/core-subjects">
-                <motion.div whileHover={{ scale: 1.05 }} className="text-gray-600 hover:text-blue-600 cursor-pointer">
-                  Core Subjects
-                </motion.div>
-              </Link>
-              <Link to="/resources">
-                <motion.div whileHover={{ scale: 1.05 }} className="text-gray-600 hover:text-blue-600 cursor-pointer">
-                  Resources
+                <motion.div whileHover={{ scale: 1.05 }} className="flex items-center space-x-1 cursor-pointer transition-colors text-gray-600 hover:text-blue-600">
+                  <Briefcase className="w-4 h-4" />
+                  <span>Placements</span>
                 </motion.div>
               </Link>
             </div>
           </div>
+          
           <div className="flex items-center space-x-4">
-            <motion.div whileHover={{ scale: 1.1 }} className="relative">
-              <Search className="w-6 h-6 text-gray-600 cursor-pointer" />
+            <motion.div whileHover={{ scale: 1.1 }} className="relative cursor-pointer">
+              <Search className="w-6 h-6 text-gray-600" />
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} className="relative">
-              <Bell className="w-6 h-6 text-gray-600 cursor-pointer" />
-              <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+            <motion.div whileHover={{ scale: 1.1 }} className="relative cursor-pointer">
+              <Bell className="w-6 h-6 text-gray-600" />
+              <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold">
-              JD
+            <motion.div whileHover={{ scale: 1.1 }} className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
+              <Users className="w-5 h-5" />
             </motion.div>
             <motion.button
               whileHover={{ scale: 1.1 }}
-              className="md:hidden"
+              className="lg:hidden"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
               {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -187,49 +201,100 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Sidebar for Mobile */}
+      {/* Mobile Sidebar */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.aside
-            variants={sidebarVariants}
-            initial="closed"
-            animate="open"
-            exit="closed"
-            className="fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 md:hidden"
-          >
-            <div className="p-4 space-y-4">
-              <Link to="/dashboard">
-                <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-2 text-blue-600">
-                  <BarChart2 className="w-5 h-5" />
-                  <span>Dashboard</span>
-                </motion.div>
-              </Link>
-              <Link to="/evaluations">
-                <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
-                  <FileText className="w-5 h-5" />
-                  <span>Evaluations</span>
-                </motion.div>
-              </Link>
-              <Link to="/placements">
-                <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
-                  <Briefcase className="w-5 h-5" />
-                  <span>Placements</span>
-                </motion.div>
-              </Link>
-              <Link to="/core-subjects">
-                <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
-                  <Database className="w-5 h-5" />
-                  <span>Core Subjects</span>
-                </motion.div>
-              </Link>
-              <Link to="/resources">
-                <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-2 text-gray-600 hover:text-blue-600">
-                  <Book className="w-5 h-5" />
-                  <span>Resources</span>
-                </motion.div>
-              </Link>
-            </div>
-          </motion.aside>
+          <>
+            {/* Overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            
+            {/* Sidebar */}
+            <motion.aside
+              variants={sidebarVariants}
+              initial="closed"
+              animate="open"
+              exit="closed"
+              className="fixed top-0 left-0 h-full w-80 bg-white shadow-lg z-50 lg:hidden overflow-y-auto"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="text-2xl font-bold text-blue-600">LearnToCode</div>
+                  <button onClick={() => setIsSidebarOpen(false)}>
+                    <X className="w-6 h-6 text-gray-600" />
+                  </button>
+                </div>
+                
+                <nav className="space-y-4">
+                  <Link to="/" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <HomeIcon className="w-5 h-5" />
+                      <span className="font-medium">Home</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/dashboard" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <BarChart2 className="w-5 h-5" />
+                      <span className="font-medium">Dashboard</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/compiler" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Code className="w-5 h-5" />
+                      <span className="font-medium">Compiler</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/problems" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <FileText className="w-5 h-5" />
+                      <span className="font-medium">Problems</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/evaluations" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <FileText className="w-5 h-5" />
+                      <span className="font-medium">Evaluations</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/quiz" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Trophy className="w-5 h-5" />
+                      <span className="font-medium">Quiz</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/programming-quiz" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Calculator className="w-5 h-5" />
+                      <span className="font-medium">Programming Quiz</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/core-subjects" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Database className="w-5 h-5" />
+                      <span className="font-medium">Core Subjects</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/placements" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Briefcase className="w-5 h-5" />
+                      <span className="font-medium">Placements</span>
+                    </motion.div>
+                  </Link>
+                  <Link to="/adaptive-dashboard" onClick={() => setIsSidebarOpen(false)}>
+                    <motion.div whileHover={{ x: 5 }} className="flex items-center space-x-3 p-3 rounded-lg transition-colors text-gray-600 hover:bg-gray-50 hover:text-blue-600">
+                      <Brain className="w-5 h-5" />
+                      <span className="font-medium">Adaptive Learning</span>
+                    </motion.div>
+                  </Link>
+                </nav>
+              </div>
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
 
