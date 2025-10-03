@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backend API Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .info { background: #e2e3e5; border-color: #d6d8db; color: #383d41; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .log { margin-top: 10px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Backend API Diagnostic Tool</h1>
+        <p>This tool helps diagnose issues with the CodingProblems component backend connection.</p>
+
+        <div class="test-section">
+            <h3>1. Test Backend Connection</h3>
+            <button onclick="testConnection()">Test Connection</button>
+            <button onclick="testProblems()">Test /api/problems</button>
+            <button onclick="testSpecificProblem()">Test Specific Problem</button>
+            <div id="connectionResult" class="log"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Backend Status</h3>
+            <button onclick="checkBackendStatus()">Check Status</button>
+            <div id="statusResult" class="log"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Manual Backend Start Instructions</h3>
+            <div class="info">
+                <p><strong>If backend is not running:</strong></p>
+                <ol>
+                    <li>Open Command Prompt or PowerShell</li>
+                    <li>Navigate to your project: <code>cd C:\Users\pavit\OneDrive\Desktop\learn_to_code\Backend</code></li>
+                    <li>Start Flask: <code>python app.py</code></li>
+                    <li>Look for message: "Running on http://127.0.0.1:5000"</li>
+                    <li>Return here and click "Test Connection"</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Common Issues & Solutions</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>Connection refused:</strong> Backend not running</li>
+                    <li><strong>Problem M041 not found:</strong> ID mismatch between frontend and backend</li>
+                    <li><strong>CORS errors:</strong> Frontend-backend communication blocked</li>
+                    <li><strong>Empty response:</strong> Problems not loading from coding_questions folder</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            element.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            element.scrollTop = element.scrollHeight;
+        }
+
+        async function testConnection() {
+            log('connectionResult', '🔍 Testing backend connection...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/problems');
+                if (response.ok) {
+                    log('connectionResult', '✅ Backend connection successful!', 'success');
+                    return true;
+                } else {
+                    log('connectionResult', `❌ Backend returned error: ${response.status} ${response.statusText}`, 'error');
+                    return false;
+                }
+            } catch (error) {
+                log('connectionResult', `❌ Connection failed: ${error.message}`, 'error');
+                log('connectionResult', '💡 Make sure backend is running: cd Backend && python app.py', 'info');
+                return false;
+            }
+        }
+
+        async function testProblems() {
+            log('connectionResult', '📚 Testing /api/problems endpoint...', 'info');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/problems');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                log('connectionResult', `✅ Loaded ${data.length} problems`, 'success');
+                
+                if (data.length > 0) {
+                    const sampleIds = data.slice(0, 5).map(p => p.id);
+                    log('connectionResult', `📋 Sample IDs: ${sampleIds.join(', ')}`, 'info');
+                    
+                    const difficulties = {};
+                    data.forEach(p => {
+                        difficulties[p.difficulty] = (difficulties[p.difficulty] || 0) + 1;
+                    });
+                    log('connectionResult', `📊 Difficulty distribution: ${JSON.stringify(difficulties)}`, 'info');
+                } else {
+                    log('connectionResult', '⚠️ No problems loaded! Check coding_questions folder', 'error');
+                }
+                
+                return data;
+            } catch (error) {
+                log('connectionResult', `❌ Failed to load problems: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        async function testSpecificProblem() {
+            log('connectionResult', '🎯 Testing specific problem access...', 'info');
+            
+            // First get a problem ID
+            try {
+                const problemsResponse = await fetch('http://localhost:5000/api/problems');
+                const problems = await problemsResponse.json();
+                
+                if (problems.length === 0) {
+                    log('connectionResult', '❌ No problems available to test', 'error');
+                    return;
+                }
+                
+                const testId = problems[0].id;
+                log('connectionResult', `🔍 Testing problem ID: ${testId}`, 'info');
+                
+                const response = await fetch(`http://localhost:5000/api/problem/${testId}`);
+                if (response.ok) {
+                    const problem = await response.json();
+                    log('connectionResult', `✅ Successfully loaded: "${problem.title}"`, 'success');
+                    log('connectionResult', `📝 Difficulty: ${problem.difficulty}, Test cases: ${problem.test_cases?.length || 0}`, 'info');
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    log('connectionResult', `❌ Problem ${testId} not found: ${errorData.error || response.statusText}`, 'error');
+                }
+            } catch (error) {
+                log('connectionResult', `❌ Error testing specific problem: ${error.message}`, 'error');
+            }
+        }
+
+        async function checkBackendStatus() {
+            log('statusResult', '🔍 Checking backend status...', 'info');
+            
+            try {
+                // Test basic connection
+                const healthResponse = await fetch('http://localhost:5000/api/problems');
+                if (healthResponse.ok) {
+                    log('statusResult', '✅ Backend is running and responding', 'success');
+                    
+                    // Check if problems are loaded
+                    const problems = await healthResponse.json();
+                    if (problems.length > 0) {
+                        log('statusResult', `✅ ${problems.length} problems loaded from coding_questions`, 'success');
+                    } else {
+                        log('statusResult', '⚠️ Backend running but no problems loaded', 'error');
+                    }
+                } else {
+                    log('statusResult', `❌ Backend error: ${healthResponse.status}`, 'error');
+                }
+            } catch (error) {
+                log('statusResult', '❌ Backend is not running or not accessible', 'error');
+                log('statusResult', '💡 Start with: cd Backend && python app.py', 'info');
+            }
+        }
+
+        // Auto-test on page load
+        window.onload = function() {
+            setTimeout(() => {
+                log('connectionResult', '🚀 Auto-testing backend connection...', 'info');
+                testConnection().then(success => {
+                    if (success) {
+                        testProblems();
+                    }
+                });
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

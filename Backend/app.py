@@ -26,9 +26,58 @@ ADAPTIVE_STATE_FILE = 'adaptive_state.json'
 if os.path.exists(ADAPTIVE_STATE_FILE):
     adaptive_engine.load_state(ADAPTIVE_STATE_FILE)
 
-# Load problems from JSON
-with open('problems.json', 'r') as f:
-    problems = json.load(f)
+# Load problems from coding_questions folder
+def load_problems_from_coding_questions():
+    """Load and combine problems from easy.json and medium.json"""
+    problems = []
+    
+    try:
+        # Load easy questions
+        easy_path = os.path.join('..', 'coding_questions', 'easy.json')
+        if os.path.exists(easy_path):
+            with open(easy_path, 'r', encoding='utf-8') as f:
+                easy_questions = json.load(f)
+                problems.extend(easy_questions)
+                print(f"Loaded {len(easy_questions)} easy questions")
+        
+        # Load medium questions
+        medium_path = os.path.join('..', 'coding_questions', 'medium.json')
+        if os.path.exists(medium_path):
+            with open(medium_path, 'r', encoding='utf-8') as f:
+                medium_questions = json.load(f)
+                problems.extend(medium_questions)
+                print(f"Loaded {len(medium_questions)} medium questions")
+        
+        # Ensure each problem has required fields
+        for i, problem in enumerate(problems):
+            # Keep original ID if it exists, otherwise assign sequential integer
+            if 'id' not in problem or problem['id'] is None:
+                problem['id'] = i + 1
+            
+            # Map statement_markdown to description if needed
+            if 'description' not in problem and 'statement_markdown' in problem:
+                problem['description'] = problem['statement_markdown']
+            
+            # Ensure concepts exist
+            if 'concepts' not in problem:
+                problem['concepts'] = problem.get('topics', [])
+            
+            # Ensure required fields exist
+            if 'difficulty' not in problem:
+                problem['difficulty'] = 'medium'  # Default difficulty
+            if 'test_cases' not in problem:
+                problem['test_cases'] = []
+            if 'starter_code' not in problem:
+                problem['starter_code'] = {'python': '# Write your solution here', 'java': '// Write your solution here'}
+        
+        print(f"Total problems loaded: {len(problems)}")
+        return problems
+        
+    except Exception as e:
+        print(f"Error loading problems: {e}")
+        return []
+
+problems = load_problems_from_coding_questions()
 
 # Enhanced problem metadata for adaptive learning
 enhanced_problems = {}
@@ -75,12 +124,14 @@ def list_problems():
         return jsonify(filtered)
     return jsonify(problems)
 
-@app.route('/api/problem/<int:pid>', methods=['GET'])
+@app.route('/api/problem/<pid>', methods=['GET'])
 def get_problem(pid):
+    # Handle both string and integer IDs
     for p in problems:
-        if p['id'] == pid:
+        # Check if ID matches as string or as integer
+        if str(p['id']) == str(pid) or p['id'] == pid:
             return jsonify(p)
-    return jsonify({'error': 'Problem not found'}), 404
+    return jsonify({'error': f'Problem {pid} not found'}), 404
 
 @app.route('/api/submit_code', methods=['POST'])
 def submit_code():
@@ -90,8 +141,8 @@ def submit_code():
     lang = data.get('language', 'python')
     user_id = data.get('user_id', 'guest')
     
-    # Find problem
-    problem = next((p for p in problems if p['id'] == pid), None)
+    # Find problem - handle both string and integer IDs
+    problem = next((p for p in problems if str(p['id']) == str(pid) or p['id'] == pid), None)
     if not problem:
         return jsonify({'error': 'Problem not found'}), 404
     

@@ -12,6 +12,19 @@
       "total_attempts": 5,
       "correct_attempts": 3,
       "last_updated": "2025-09-02T10:12:49.272593"
+    },
+    "student_jbsberbjt": {
+      "user_id": "student_jbsberbjt",
+      "theta": -0.5335166704601416,
+      "theta_se": 0.736931078920395,
+      "elo_rating": 1504.6940729878409,
+      "concept_mastery": {
+        "arrays": 0.3064516129032258,
+        "algorithms": 0.3064516129032258
+      },
+      "total_attempts": 4,
+      "correct_attempts": 1,
+      "last_updated": "2025-10-03T06:10:40.507067"
     }
   },
   "item_params": {
@@ -19,9 +32,9 @@
       "item_id": "1",
       "difficulty": 0.0,
       "discrimination": 1.0,
-      "elo_rating": 1500.0,
+      "elo_rating": 1494.757230882578,
       "concepts": [],
-      "exposure_count": 0,
+      "exposure_count": 3,
       "last_calibrated": "2025-09-02T10:09:20.088573"
     },
     "2": {
@@ -127,6 +140,1051 @@
       ],
       "exposure_count": 0,
       "last_calibrated": "2025-09-02T10:09:20.088573"
+    },
+    "11": {
+      "item_id": "11",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "12": {
+      "item_id": "12",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "13": {
+      "item_id": "13",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "14": {
+      "item_id": "14",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "15": {
+      "item_id": "15",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "16": {
+      "item_id": "16",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "17": {
+      "item_id": "17",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "18": {
+      "item_id": "18",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "19": {
+      "item_id": "19",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "20": {
+      "item_id": "20",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "21": {
+      "item_id": "21",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707022"
+    },
+    "22": {
+      "item_id": "22",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "23": {
+      "item_id": "23",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "loops"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "24": {
+      "item_id": "24",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "25": {
+      "item_id": "25",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "26": {
+      "item_id": "26",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "27": {
+      "item_id": "27",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "28": {
+      "item_id": "28",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "loops"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "29": {
+      "item_id": "29",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "30": {
+      "item_id": "30",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "31": {
+      "item_id": "31",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "32": {
+      "item_id": "32",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "33": {
+      "item_id": "33",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "34": {
+      "item_id": "34",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "loops"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "35": {
+      "item_id": "35",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "36": {
+      "item_id": "36",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "37": {
+      "item_id": "37",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "38": {
+      "item_id": "38",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "strings"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "39": {
+      "item_id": "39",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "40": {
+      "item_id": "40",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "41": {
+      "item_id": "41",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "42": {
+      "item_id": "42",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "43": {
+      "item_id": "43",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "44": {
+      "item_id": "44",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "45": {
+      "item_id": "45",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "46": {
+      "item_id": "46",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "loops"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "47": {
+      "item_id": "47",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "48": {
+      "item_id": "48",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "loops"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "49": {
+      "item_id": "49",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "50": {
+      "item_id": "50",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "51": {
+      "item_id": "51",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "52": {
+      "item_id": "52",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "53": {
+      "item_id": "53",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "54": {
+      "item_id": "54",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "55": {
+      "item_id": "55",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "56": {
+      "item_id": "56",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "57": {
+      "item_id": "57",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "58": {
+      "item_id": "58",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "59": {
+      "item_id": "59",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "60": {
+      "item_id": "60",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "61": {
+      "item_id": "61",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "62": {
+      "item_id": "62",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "63": {
+      "item_id": "63",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "64": {
+      "item_id": "64",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "65": {
+      "item_id": "65",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "66": {
+      "item_id": "66",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "67": {
+      "item_id": "67",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "68": {
+      "item_id": "68",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "69": {
+      "item_id": "69",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "70": {
+      "item_id": "70",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "71": {
+      "item_id": "71",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "72": {
+      "item_id": "72",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "73": {
+      "item_id": "73",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "74": {
+      "item_id": "74",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "75": {
+      "item_id": "75",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "76": {
+      "item_id": "76",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "77": {
+      "item_id": "77",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "78": {
+      "item_id": "78",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "strings",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "79": {
+      "item_id": "79",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "80": {
+      "item_id": "80",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "81": {
+      "item_id": "81",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "82": {
+      "item_id": "82",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "83": {
+      "item_id": "83",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "84": {
+      "item_id": "84",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "85": {
+      "item_id": "85",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "86": {
+      "item_id": "86",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "87": {
+      "item_id": "87",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "88": {
+      "item_id": "88",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "89": {
+      "item_id": "89",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "90": {
+      "item_id": "90",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "91": {
+      "item_id": "91",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "92": {
+      "item_id": "92",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "strings",
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "93": {
+      "item_id": "93",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "94": {
+      "item_id": "94",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "95": {
+      "item_id": "95",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "96": {
+      "item_id": "96",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1503.2,
+      "concepts": [
+        "arrays",
+        "algorithms"
+      ],
+      "exposure_count": 1,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "97": {
+      "item_id": "97",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "98": {
+      "item_id": "98",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "99": {
+      "item_id": "99",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "100": {
+      "item_id": "100",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "101": {
+      "item_id": "101",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "102": {
+      "item_id": "102",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "arrays"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "103": {
+      "item_id": "103",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "104": {
+      "item_id": "104",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [
+        "recursion",
+        "algorithms"
+      ],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
+    },
+    "105": {
+      "item_id": "105",
+      "difficulty": 0.0,
+      "discrimination": 1.0,
+      "elo_rating": 1500.0,
+      "concepts": [],
+      "exposure_count": 0,
+      "last_calibrated": "2025-10-03T06:06:20.707526"
     }
   },
   "attempt_history": [
@@ -201,6 +1259,66 @@
       "code_quality_signals": {
         "cyclomatic_complexity": 1,
         "lines_of_code": 2,
+        "style_violations": 0,
+        "security_issues": 0
+      }
+    },
+    {
+      "user_id": "student_jbsberbjt",
+      "item_id": "96",
+      "score": 0.4,
+      "binary_score": 0,
+      "time_taken": 41,
+      "timestamp": "2025-10-03T06:08:59.091494",
+      "hints_used": 0,
+      "code_quality_signals": {
+        "cyclomatic_complexity": 1,
+        "lines_of_code": 3,
+        "style_violations": 0,
+        "security_issues": 0
+      }
+    },
+    {
+      "user_id": "student_jbsberbjt",
+      "item_id": "1",
+      "score": 0.4,
+      "binary_score": 0,
+      "time_taken": 2,
+      "timestamp": "2025-10-03T06:09:53.100239",
+      "hints_used": 0,
+      "code_quality_signals": {
+        "cyclomatic_complexity": 1,
+        "lines_of_code": 3,
+        "style_violations": 0,
+        "security_issues": 0
+      }
+    },
+    {
+      "user_id": "student_jbsberbjt",
+      "item_id": "1",
+      "score": 0.4,
+      "binary_score": 0,
+      "time_taken": 1,
+      "timestamp": "2025-10-03T06:10:25.026706",
+      "hints_used": 0,
+      "code_quality_signals": {
+        "cyclomatic_complexity": 1,
+        "lines_of_code": 3,
+        "style_violations": 0,
+        "security_issues": 0
+      }
+    },
+    {
+      "user_id": "student_jbsberbjt",
+      "item_id": "1",
+      "score": 0.9052631578947367,
+      "binary_score": 1,
+      "time_taken": 1,
+      "timestamp": "2025-10-03T06:10:40.507067",
+      "hints_used": 0,
+      "code_quality_signals": {
+        "cyclomatic_complexity": 1,
+        "lines_of_code": 3,
         "style_violations": 0,
         "security_issues": 0
       }

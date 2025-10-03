@@ -5,7 +5,6 @@ import Navbar from './components/Navbar'
 import Home from './Home'
 import Compiler from './components/Compiler'
 import EnhancedCompiler from './components/EnhancedCompiler'
-import Test from './components/Test'
 import CompetitiveQuiz from './components/CompetitiveQuiz'
 import ProgrammingQuiz from './components/ProgrammingQuiz'
 import CodingProblems from './components/CodingProblems'
@@ -30,7 +29,6 @@ function App() {
               <Route path='/compiler' element={<EnhancedCompiler />} />
               <Route path='/compiler-simple' element={<Compiler />} />
               <Route path='/adaptive-dashboard' element={<AdaptiveLearningDashboard />} />
-              <Route path='/test' element={<Test />} />
               <Route path='/quiz' element={<CompetitiveQuiz />} />
               <Route path='/programming-quiz' element={<ProgrammingQuiz />} />
               <Route path='/evaluations' element={<Evaluations />} />
