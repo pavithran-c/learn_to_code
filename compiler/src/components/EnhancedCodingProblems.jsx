@@ -23,10 +23,6 @@ const CodingProblems = () => {
   const [problemAttempts, setProblemAttempts] = useState({});
   const [startTime, setStartTime] = useState(null);
   const [showRetakeOption, setShowRetakeOption] = useState(false);
-  const [hiddenTestsRevealed, setHiddenTestsRevealed] = useState(false);
-  const [hintsShown, setHintsShown] = useState(false);
-  const [failureThreshold] = useState(3); // Show hidden tests after 3 failures
-  const [hintThreshold] = useState(2); // Show hints after 2 failures
   
   // Learning curve and adaptive difficulty states
   const [userPerformance, setUserPerformance] = useState({
@@ -273,8 +269,6 @@ if __name__ == "__main__":
       setLanguage(lang);
       setStartTime(Date.now()); // Track start time
       setShowRetakeOption(false);
-      setHiddenTestsRevealed(false); // Reset hidden test revelation
-      setHintsShown(false); // Reset hints
       
       // Clear compiler output when selecting new problem
       setCompilerOutput('');
@@ -381,20 +375,9 @@ if __name__ == "__main__":
     
     try {
       console.log(`Submitting code for problem ${selected.id}...`);
-      
-      // Get authentication token
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        alert('Please log in to submit code');
-        return;
-      }
-      
       const response = await fetch('http://localhost:5000/api/submit_code', {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           problem_id: selected.id,
           code,
@@ -403,129 +386,95 @@ if __name__ == "__main__":
       });
       
       if (!response.ok) {
-        if (response.status === 401) {
-          alert('Your session has expired. Please log in again.');
-          return;
-        }
         throw new Error(`Submission failed: ${response.status}`);
       }
       
       const data = await response.json();
       console.log('Submission result:', data.all_passed ? 'PASSED' : 'FAILED');
-      
-      // Update problem attempts tracking
-      const problemId = selected.id;
-      const currentAttempts = problemAttempts[problemId] || { failures: 0, totalTime: 0, lastAttempt: Date.now() };
-      
-      // Check for progressive disclosure triggers
-      if (!data.all_passed) {
-        const newFailureCount = currentAttempts.failures + 1;
-        
-        // Show hints after reaching hint threshold
-        if (newFailureCount >= hintThreshold && !hintsShown) {
-          setHintsShown(true);
-          console.log(`Showing hints after ${newFailureCount} failures`);
-        }
-        
-        // Reveal hidden tests after reaching failure threshold
-        if (newFailureCount >= failureThreshold && !hiddenTestsRevealed) {
-          setHiddenTestsRevealed(true);
-          console.log(`Revealing hidden test cases after ${newFailureCount} failures`);
-          
-          // Enhanced result data with revealed hidden tests
-          data.progressive_disclosure = {
-            hidden_tests_revealed: true,
-            failure_count: newFailureCount,
-            message: `After ${newFailureCount} attempts, here are the hidden test cases to help you debug:`
-          };
-        }
-      }
-      
       setResults(data);
     
-      // Update user performance tracking
-      const problemDifficulty = selected.difficulty;
-      const wasSuccess = data.all_passed;
+    // Update problem attempts tracking
+    const problemId = selected.id;
+    const currentAttempts = problemAttempts[problemId] || { failures: 0, totalTime: 0, lastAttempt: Date.now() };
+    
+    // Update user performance tracking
+    const problemDifficulty = selected.difficulty;
+    const wasSuccess = data.all_passed;
+    
+    setUserPerformance(prev => {
+      const newPerf = { ...prev };
       
-      setUserPerformance(prev => {
-        const newPerf = { ...prev };
-        
-        // Update difficulty-specific stats
-        if (problemDifficulty === 'easy') {
-          newPerf.easyTotal += 1;
-          if (wasSuccess) newPerf.easySuccess += 1;
-        } else if (problemDifficulty === 'medium') {
-          newPerf.mediumTotal += 1;
-          if (wasSuccess) newPerf.mediumSuccess += 1;
-        } else if (problemDifficulty === 'hard') {
-          newPerf.hardTotal += 1;
-          if (wasSuccess) newPerf.hardSuccess += 1;
-        }
-        
-        // Update streak and totals
-        if (wasSuccess) {
-          newPerf.currentStreak += 1;
-          newPerf.bestStreak = Math.max(newPerf.bestStreak, newPerf.currentStreak);
-          newPerf.totalSolved += 1;
-        } else {
-          newPerf.currentStreak = 0;
-        }
-        
-        // Update average time (simple moving average)
-        const totalAttempts = newPerf.easyTotal + newPerf.mediumTotal + newPerf.hardTotal;
-        newPerf.averageTime = ((newPerf.averageTime * (totalAttempts - 1)) + timeSpent) / totalAttempts;
-        
-        return newPerf;
-      });
-      
-      if (!data.all_passed) {
-        // Failed attempt
-        const updatedAttempts = {
-          failures: currentAttempts.failures + 1,
-          totalTime: currentAttempts.totalTime + timeSpent,
-          lastAttempt: Date.now()
-        };
-        
-        setProblemAttempts(prev => ({
-          ...prev,
-          [problemId]: updatedAttempts
-        }));
-        
-        // Check if user qualifies for retake option
-        // Conditions: 5+ failures OR spent more than 15 minutes total
-        if (updatedAttempts.failures >= 5 || updatedAttempts.totalTime > 900) {
-          setShowRetakeOption(true);
-        }
-      } else {
-        // Successful attempt - reset tracking
-        setProblemAttempts(prev => ({
-          ...prev,
-          [problemId]: { failures: 0, totalTime: 0, lastAttempt: Date.now() }
-        }));
-        setShowRetakeOption(false);
-        setHiddenTestsRevealed(false);
-        setHintsShown(false);
-        
-        // Reshuffle problems based on updated performance
-        setTimeout(() => shuffleProblemsBasedOnLearningCurve(), 500);
+      // Update difficulty-specific stats
+      if (problemDifficulty === 'easy') {
+        newPerf.easyTotal += 1;
+        if (wasSuccess) newPerf.easySuccess += 1;
+      } else if (problemDifficulty === 'medium') {
+        newPerf.mediumTotal += 1;
+        if (wasSuccess) newPerf.mediumSuccess += 1;
+      } else if (problemDifficulty === 'hard') {
+        newPerf.hardTotal += 1;
+        if (wasSuccess) newPerf.hardSuccess += 1;
       }
       
-      // Record coding result for dashboard
-      recordCodingResult(
-        selected.title || `Problem ${problemId}`,
-        data.all_passed,
-        (problemAttempts[problemId]?.failures || 0) + (data.all_passed ? 0 : 1),
-        timeSpent
-      );
+      // Update streak and totals
+      if (wasSuccess) {
+        newPerf.currentStreak += 1;
+        newPerf.bestStreak = Math.max(newPerf.bestStreak, newPerf.currentStreak);
+        newPerf.totalSolved += 1;
+      } else {
+        newPerf.currentStreak = 0;
+      }
       
-      setStartTime(Date.now()); // Reset start time for next attempt
+      // Update average time (simple moving average)
+      const totalAttempts = newPerf.easyTotal + newPerf.mediumTotal + newPerf.hardTotal;
+      newPerf.averageTime = ((newPerf.averageTime * (totalAttempts - 1)) + timeSpent) / totalAttempts;
       
+      return newPerf;
+    });
+    
+    if (!data.all_passed) {
+      // Failed attempt
+      const updatedAttempts = {
+        failures: currentAttempts.failures + 1,
+        totalTime: currentAttempts.totalTime + timeSpent,
+        lastAttempt: Date.now()
+      };
+      
+      setProblemAttempts(prev => ({
+        ...prev,
+        [problemId]: updatedAttempts
+      }));
+      
+      // Check if user qualifies for retake option
+      // Conditions: 3+ failures OR spent more than 10 minutes total
+      if (updatedAttempts.failures >= 3 || updatedAttempts.totalTime > 600) {
+        setShowRetakeOption(true);
+      }
+    } else {
+      // Successful attempt - reset tracking
+      setProblemAttempts(prev => ({
+        ...prev,
+        [problemId]: { failures: 0, totalTime: 0, lastAttempt: Date.now() }
+      }));
+      setShowRetakeOption(false);
+      
+      // Reshuffle problems based on updated performance
+      setTimeout(() => shuffleProblemsBasedOnLearningCurve(), 500);
+    }
+    
+    // Record coding result for dashboard
+    recordCodingResult(
+      selected.title || `Problem ${problemId}`,
+      data.all_passed,
+      (problemAttempts[problemId]?.failures || 0) + (data.all_passed ? 0 : 1),
+      timeSpent
+    );
+    
+    setStartTime(Date.now()); // Reset start time for next attempt
+    
     } catch (error) {
       console.error('Error submitting code:', error);
-      const errorMessage = error.message.includes('fetch') 
-        ? 'Cannot connect to backend server. Please ensure the backend is running.'
-        : 'Failed to submit code. Please check your connection and try again.';
-      alert(errorMessage);
+      alert('Failed to submit code. Please check your connection and try again.');
       setResults({
         all_passed: false,
         results: [],
@@ -912,41 +861,11 @@ if __name__ == "__main__":
                             )}
                           </div>
                           
-                          {/* Progressive Disclosure Notifications */}
-                          {results.progressive_disclosure && results.progressive_disclosure.hidden_tests_revealed && (
-                            <div className="bg-blue-900/30 border border-blue-600 rounded p-3 mb-4">
-                              <div className="flex items-center gap-2 text-blue-400">
-                                <span>🔍</span>
-                                <span className="text-sm">
-                                  <strong>Hidden Test Cases Revealed!</strong><br/>
-                                  {results.progressive_disclosure.message}
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Hints Display */}
-                          {hintsShown && results.hints && results.hints.length > 0 && (
-                            <div className="bg-purple-900/30 border border-purple-600 rounded p-3 mb-4">
-                              <div className="text-purple-400 mb-2">
-                                <span>💡</span>
-                                <span className="font-semibold ml-2">Hints to Help You:</span>
-                              </div>
-                              <div className="space-y-2">
-                                {results.hints.slice(0, 2).map((hint, idx) => (
-                                  <div key={idx} className="text-sm text-purple-300 pl-4 border-l-2 border-purple-500">
-                                    {hint}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
                           {/* Retake Notification */}
                           {showRetakeOption && !results.all_passed && (
                             <div className="bg-yellow-900/30 border border-yellow-600 rounded p-3 mb-4">
                               <div className="flex items-center gap-2 text-yellow-400">
-                                <span>�</span>
+                                <span>💡</span>
                                 <span className="text-sm">
                                   Having trouble? You can now <strong>retake</strong> this problem with a fresh start!
                                 </span>
@@ -954,9 +873,7 @@ if __name__ == "__main__":
                             </div>
                           )}
                           
-                          {/* Public Test Results */}
                           <div className="space-y-3">
-                            <div className="text-sm font-medium text-gray-300 mb-2">Public Test Cases:</div>
                             {results.results.map((r, idx) => (
                               <div key={idx} className="bg-gray-900 rounded p-3 border-l-4 border-l-gray-600">
                                 <div className="flex justify-between items-center mb-2">
@@ -968,86 +885,16 @@ if __name__ == "__main__":
                                   )}
                                 </div>
                                 <div className="font-mono text-xs space-y-1 text-gray-300">
-                                  <div><span className="text-gray-400">Input:</span> {JSON.stringify(r.input)}</div>
+                                  <div><span className="text-gray-400">nums =</span> {JSON.stringify(r.input)}</div>
                                   <div><span className="text-gray-400">Expected:</span> {JSON.stringify(r.expected)}</div>
-                                  <div><span className="text-gray-400">Your Output:</span> {JSON.stringify(r.output)}</div>
+                                  <div><span className="text-gray-400">Output:</span> {JSON.stringify(r.output)}</div>
                                   {r.stderr && r.stderr.trim() && (
                                     <div className="text-red-400"><span className="text-gray-400">Error:</span> {r.stderr}</div>
-                                  )}
-                                  {r.execution_time_ms && (
-                                    <div className="text-blue-400"><span className="text-gray-400">Time:</span> {r.execution_time_ms}ms</div>
                                   )}
                                 </div>
                               </div>
                             ))}
                           </div>
-                          
-                          {/* Hidden Test Results Summary */}
-                          {results.hidden_tests && (
-                            <div className="mt-4 p-3 bg-gray-800 rounded border">
-                              <div className="text-sm font-medium text-gray-300 mb-2">Hidden Test Cases:</div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-400">
-                                  {results.hidden_tests.passed} / {results.hidden_tests.total} passed
-                                </span>
-                                <span className={`text-sm font-semibold ${
-                                  results.hidden_tests.percentage >= 100 ? 'text-green-400' : 
-                                  results.hidden_tests.percentage >= 50 ? 'text-yellow-400' : 'text-red-400'
-                                }`}>
-                                  {results.hidden_tests.percentage}%
-                                </span>
-                              </div>
-                              
-                              {!hiddenTestsRevealed && (
-                                <div className="mt-2 text-xs text-gray-500">
-                                  💡 Hidden test details will be revealed after {failureThreshold - (problemAttempts[selected?.id]?.failures || 0)} more failed attempts
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Revealed Hidden Test Details */}
-                          {hiddenTestsRevealed && results.hidden_test_details && (
-                            <div className="mt-4">
-                              <div className="text-sm font-medium text-red-300 mb-2">🔍 Revealed Hidden Test Cases:</div>
-                              <div className="space-y-2">
-                                {results.hidden_test_details.map((test, idx) => (
-                                  <div key={idx} className="bg-red-900/20 rounded p-3 border border-red-600">
-                                    <div className="flex justify-between items-center mb-2">
-                                      <span className="text-sm font-medium text-red-300">Hidden Case {idx + 1}</span>
-                                      {test.passed ? (
-                                        <span className="text-green-400 text-sm">✓ Passed</span>
-                                      ) : (
-                                        <span className="text-red-400 text-sm">✗ Failed</span>
-                                      )}
-                                    </div>
-                                    <div className="font-mono text-xs space-y-1 text-gray-300">
-                                      <div><span className="text-gray-400">Input:</span> {JSON.stringify(test.input)}</div>
-                                      <div><span className="text-gray-400">Expected:</span> {JSON.stringify(test.expected)}</div>
-                                      <div><span className="text-gray-400">Your Output:</span> {JSON.stringify(test.output)}</div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Performance Metrics */}
-                          {results.performance && (
-                            <div className="mt-4 p-3 bg-gray-800 rounded border">
-                              <div className="text-sm font-medium text-gray-300 mb-2">Performance Metrics:</div>
-                              <div className="grid grid-cols-2 gap-4 text-xs">
-                                <div>
-                                  <span className="text-gray-400">Execution Time:</span>
-                                  <span className="ml-2 text-blue-400">{results.performance.execution_time_ms}ms</span>
-                                </div>
-                                <div>
-                                  <span className="text-gray-400">Memory:</span>
-                                  <span className="ml-2 text-blue-400">{results.performance.memory_peak_mb}MB</span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </>
                       )}
 

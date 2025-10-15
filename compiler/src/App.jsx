@@ -1,47 +1,91 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import './App.css'
+import { AuthProvider } from './contexts/AuthContext'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import Login from './components/auth/Login'
+import Register from './components/auth/Register'
 import Navbar from './components/Navbar'
-import Home from './Home'
-import Compiler from './components/Compiler'
-import EnhancedCompiler from './components/EnhancedCompiler'
-import CompetitiveQuiz from './components/CompetitiveQuiz'
+import SimplifiedProfessionalHome from './SimplifiedProfessionalHome'
+import SimplePracticeCompiler from './components/SimplePracticeCompiler'
+import SimpleLeetCodeStyleProblems from './components/SimpleLeetCodeStyleProblems'
+import EnhancedCodingProblems from './components/EnhancedCodingProblems'
+import InteractiveQuiz from './components/InteractiveQuiz'
 import ProgrammingQuiz from './components/ProgrammingQuiz'
-import CodingProblems from './components/CodingProblems'
-import Placements from './components/Placements'
+import CompetitiveQuiz from './components/CompetitiveQuiz'
 import CoreSubjectsQuiz from './components/CoreSubjectsQuiz'
-import Dashboard from './components/Dashboard'
-import AdaptiveLearningDashboard from './components/AdaptiveLearningDashboard'
-import Evaluations from './components/Evaluations'
+import RealTimeDashboard from './components/SimplifiedDashboard'
+
+// Component to handle navbar visibility
+function AppContent() {
+  const location = useLocation();
+  const hideNavbarPaths = ['/', '/login', '/register'];
+  const shouldShowNavbar = !hideNavbarPaths.includes(location.pathname);
+
+  return (
+    <div className="min-h-screen bg-white">
+      {shouldShowNavbar && <Navbar />}
+      <Routes>
+        {/* Public routes - accessible without authentication */}
+        <Route path='/' element={<SimplifiedProfessionalHome />} />
+        <Route path='/home' element={<SimplifiedProfessionalHome />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/register' element={<Register />} />
+        
+        {/* Demo routes - accessible without authentication for showcasing */}
+        <Route path='/practice' element={<SimplePracticeCompiler />} />
+        <Route path='/problems-demo' element={<SimpleLeetCodeStyleProblems />} />
+        <Route path='/enhanced-problems' element={<EnhancedCodingProblems />} />
+        <Route path='/quiz-demo' element={<InteractiveQuiz />} />
+        <Route path='/programming-quiz-demo' element={<ProgrammingQuiz />} />
+        <Route path='/competitive-quiz-demo' element={<CompetitiveQuiz />} />
+        <Route path='/core-subjects-quiz-demo' element={<CoreSubjectsQuiz />} />
+        <Route path='/evaluations' element={<RealTimeDashboard />} />
+        
+        {/* Protected routes - require authentication */}
+        <Route path='/dashboard' element={
+          <ProtectedRoute>
+            <RealTimeDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path='/problems' element={
+          <ProtectedRoute>
+            <SimpleLeetCodeStyleProblems />
+          </ProtectedRoute>
+        } />
+        <Route path='/quiz' element={
+          <ProtectedRoute>
+            <InteractiveQuiz />
+          </ProtectedRoute>
+        } />
+        <Route path='/programming-quiz' element={
+          <ProtectedRoute>
+            <ProgrammingQuiz />
+          </ProtectedRoute>
+        } />
+        <Route path='/competitive-quiz' element={
+          <ProtectedRoute>
+            <CompetitiveQuiz />
+          </ProtectedRoute>
+        } />
+        <Route path='/core-subjects-quiz' element={
+          <ProtectedRoute>
+            <CoreSubjectsQuiz />
+          </ProtectedRoute>
+        } />
+        
+        {/* Redirect any unknown routes to home */}
+        <Route path='*' element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  )
+}
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Routes>
-        {/* Home page without navbar (has its own header) */}
-        <Route path='/' element={<Home />} />
-        
-        {/* All other pages with navbar */}
-        <Route path='/*' element={
-          <>
-            <Navbar />
-            <Routes>
-              <Route path='/compiler' element={<EnhancedCompiler />} />
-              <Route path='/compiler-simple' element={<Compiler />} />
-              <Route path='/adaptive-dashboard' element={<AdaptiveLearningDashboard />} />
-              <Route path='/quiz' element={<CompetitiveQuiz />} />
-              <Route path='/programming-quiz' element={<ProgrammingQuiz />} />
-              <Route path='/evaluations' element={<Evaluations />} />
-              <Route path='/evaluations/*' element={<Evaluations />} />
-              <Route path='/problems' element={<CodingProblems />} />
-              <Route path='/placements' element={<Placements />} />
-              <Route path='/core-subjects' element={<CoreSubjectsQuiz />} />
-              <Route path='/dashboard' element={<Dashboard />} />
-            </Routes>
-          </>
-        } />
-      </Routes>
-    </div>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

@@ -5,9 +5,13 @@ import {
   BarChart3, Activity, Calendar, Award, BookOpen, Code, 
   CheckCircle, XCircle, Zap, Globe, Brain, FileText, 
   PieChart, LineChart, ArrowUp, ArrowDown, Play, Pause,
-  ChevronRight, Filter, Download, Settings, RefreshCw
+  ChevronRight, Filter, Download, Settings, RefreshCw,
+  Bell, AlertCircle, TrendingDown as TrendDown, Users,
+  Flame, Shield, Lightbulb, Coffee, Timer
 } from 'lucide-react';
 import { getDashboardStats, calculateRank, calculatePercentile, initializeDashboard, populateSampleData, resetUserData } from '../utils/dashboardStorage';
+import PerformanceChart from './PerformanceChart';
+import { useAuth } from '../contexts/AuthContext';
 
 // Default mock data for demonstration when no real data exists
 const defaultMockData = {
@@ -76,48 +80,129 @@ const Dashboard = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [isLoading, setIsLoading] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [realTimeStats, setRealTimeStats] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [performanceData, setPerformanceData] = useState(null);
+  const [achievements, setAchievements] = useState([]);
+  const [streakData, setStreakData] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  
+  const { user, updateActivity } = useAuth();
 
   // Load user data on component mount
   useEffect(() => {
     loadUserData();
-  }, []);
+    loadPerformanceData();
+    loadNotifications();
+    
+    // Set up auto-refresh interval
+    if (autoRefresh) {
+      const interval = setInterval(() => {
+        refreshRealTimeData();
+      }, 30000); // Refresh every 30 seconds
+      
+      return () => clearInterval(interval);
+    }
+  }, [autoRefresh]);
+
+  // Update activity tracking
+  useEffect(() => {
+    updateActivity?.();
+  }, [updateActivity]);
 
   const loadUserData = () => {
     setIsLoading(true);
     // Simulate API call delay
     setTimeout(() => {
-      const data = initializeDashboard(); // Use initialization function
+      const data = initializeDashboard();
       // Enhance profile data with calculated values
       data.profile.rank = calculateRank(data.quickStats.testsCompleted * 100 + data.quickStats.problemsSolved * 50);
       data.profile.percentile = `${calculatePercentile(data.quickStats.testsCompleted * 100)}%`;
       data.profile.totalScore = data.quickStats.testsCompleted * 100 + data.quickStats.problemsSolved * 50;
       
-      // Use existing weeklyProgress and upcomingTests from sample data if available
-      if (!data.weeklyProgress) {
-        data.weeklyProgress = [
-          { day: 'Mon', practice: 3.5, quiz: 2.8, coding: 1.9 },
-          { day: 'Tue', practice: 2.1, quiz: 3.2, coding: 2.7 },
-          { day: 'Wed', practice: 4.8, quiz: 1.6, coding: 3.4 },
-          { day: 'Thu', practice: 3.9, quiz: 2.9, coding: 2.1 },
-          { day: 'Fri', practice: 5.3, quiz: 4.1, coding: 4.6 },
-          { day: 'Sat', practice: 6.2, quiz: 3.7, coding: 2.8 },
-          { day: 'Sun', practice: 4.1, quiz: 2.4, coding: 3.9 }
-        ];
-      }
-
-      if (!data.upcomingTests || data.upcomingTests.length === 0) {
-        data.upcomingTests = [
-          { name: 'Advanced Algorithms Mock Test', date: 'Tomorrow', time: '10:00 AM', duration: '90 min' },
-          { name: 'Database Design Assessment', date: 'Sept 1', time: '2:00 PM', duration: '75 min' },
-          { name: 'System Design Interview Prep', date: 'Sept 3', time: '11:00 AM', duration: '120 min' },
-          { name: 'Network Security Quiz', date: 'Sept 5', time: '3:30 PM', duration: '60 min' },
-          { name: 'Full Stack Development Test', date: 'Sept 7', time: '9:00 AM', duration: '150 min' }
-        ];
-      }
-
       setUserData(data);
       setIsLoading(false);
-    }, 500);
+      setLastUpdated(new Date());
+    }, 1000);
+  };
+
+  const loadPerformanceData = async () => {
+    // Simulate fetching performance analytics from backend
+    const mockPerformanceData = {
+      overall: [
+        { x: 0, y: 78, label: 'Mon' },
+        { x: 1, y: 82, label: 'Tue' },
+        { x: 2, y: 85, label: 'Wed' },
+        { x: 3, y: 79, label: 'Thu' },
+        { x: 4, y: 88, label: 'Fri' },
+        { x: 5, y: 92, label: 'Sat' },
+        { x: 6, y: 87, label: 'Sun' }
+      ],
+      accuracy: [
+        { x: 0, y: 85, label: 'Mon' },
+        { x: 1, y: 87, label: 'Tue' },
+        { x: 2, y: 90, label: 'Wed' },
+        { x: 3, y: 88, label: 'Thu' },
+        { x: 4, y: 91, label: 'Fri' },
+        { x: 5, y: 94, label: 'Sat' },
+        { x: 6, y: 89, label: 'Sun' }
+      ],
+      subjects: [
+        { label: 'Data Structures', y: 92 },
+        { label: 'Algorithms', y: 87 },
+        { label: 'Databases', y: 76 },
+        { label: 'Networks', y: 82 }
+      ]
+    };
+    
+    setPerformanceData(mockPerformanceData);
+  };
+
+  const loadNotifications = () => {
+    const mockNotifications = [
+      {
+        id: 1,
+        type: 'achievement',
+        title: 'New Achievement Unlocked!',
+        message: 'You\'ve solved 50 coding problems',
+        time: '2 hours ago',
+        unread: true,
+        icon: Trophy
+      },
+      {
+        id: 2,
+        type: 'reminder',
+        title: 'Daily Goal Reminder',
+        message: 'You\'re 2 problems away from today\'s goal',
+        time: '4 hours ago',
+        unread: true,
+        icon: Target
+      },
+      {
+        id: 3,
+        type: 'streak',
+        title: 'Streak Alert',
+        message: 'Keep your 15-day streak alive!',
+        time: '1 day ago',
+        unread: false,
+        icon: Flame
+      }
+    ];
+    
+    setNotifications(mockNotifications);
+  };
+
+  const refreshRealTimeData = async () => {
+    // Simulate real-time data updates
+    setRealTimeStats({
+      activeUsers: Math.floor(Math.random() * 1000) + 500,
+      problemsSolvedToday: Math.floor(Math.random() * 50) + 200,
+      averageAccuracy: (Math.random() * 10 + 85).toFixed(1),
+      trending: Math.random() > 0.5 ? 'up' : 'down'
+    });
+    
+    setLastUpdated(new Date());
   };
 
   const containerVariants = {
@@ -275,51 +360,124 @@ const Dashboard = () => {
   const ProgressChart = () => (
     <motion.div
       variants={itemVariants}
-      className="bg-white p-6 rounded-lg shadow-sm border"
+      className="bg-white/50 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-white/20"
     >
-      <h3 className="text-lg font-semibold mb-4">Weekly Activity</h3>
-      <div className="h-64 flex items-end justify-between space-x-2">
-        {userData.weeklyProgress.map((day, index) => (
-          <div key={index} className="flex-1 space-y-1">
-            <div className="text-xs text-center text-gray-500 mb-2">{day.day}</div>
-            <div className="flex flex-col space-y-1">
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: `${day.coding * 20}px` }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                className="bg-blue-500 rounded-sm"
-                title={`Coding: ${day.coding}h`}
-              />
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: `${day.quiz * 20}px` }}
-                transition={{ duration: 0.8, delay: index * 0.1 + 0.2 }}
-                className="bg-green-500 rounded-sm"
-                title={`Quiz: ${day.quiz}h`}
-              />
-              <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: `${day.practice * 20}px` }}
-                transition={{ duration: 0.8, delay: index * 0.1 + 0.4 }}
-                className="bg-purple-500 rounded-sm"
-                title={`Practice: ${day.practice}h`}
-              />
-            </div>
-          </div>
-        ))}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">Performance Analytics</h3>
+          <p className="text-sm text-gray-600">Track your learning progress over time</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <select
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value)}
+            className="px-3 py-1 bg-white/70 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="7d">7 days</option>
+            <option value="30d">30 days</option>
+            <option value="90d">3 months</option>
+          </select>
+          <motion.button
+            className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={loadPerformanceData}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </motion.button>
+        </div>
       </div>
-      <div className="flex items-center justify-center space-x-6 mt-4 text-sm">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-500 rounded-sm" />
-          <span>Coding</span>
+      
+      {performanceData ? (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+          {/* Overall Performance */}
+          <div className="bg-white/70 rounded-xl p-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+              <TrendingUp className="h-4 w-4 mr-2 text-blue-600" />
+              Overall Performance
+            </h4>
+            <PerformanceChart
+              data={performanceData.overall}
+              type="line"
+              height={150}
+              color="#3B82F6"
+              animated={true}
+            />
+          </div>
+          
+          {/* Accuracy Trends */}
+          <div className="bg-white/70 rounded-xl p-4">
+            <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+              <Target className="h-4 w-4 mr-2 text-green-600" />
+              Accuracy Trends
+            </h4>
+            <PerformanceChart
+              data={performanceData.accuracy}
+              type="area"
+              height={150}
+              color="#10B981"
+              animated={true}
+            />
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-green-500 rounded-sm" />
-          <span>Quiz</span>
+      ) : (
+        <div className="h-64 flex items-center justify-center bg-gray-50 rounded-xl">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+            <p className="text-gray-500">Loading performance data...</p>
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-purple-500 rounded-sm" />
-          <span>Practice</span>
+      )}
+      
+      {/* Weekly Activity Bar Chart */}
+      <div className="bg-white/70 rounded-xl p-4">
+        <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+          <Activity className="h-4 w-4 mr-2 text-purple-600" />
+          Weekly Activity
+        </h4>
+        <div className="h-48 flex items-end justify-between space-x-2">
+          {userData?.weeklyProgress?.map((day, index) => (
+            <div key={index} className="flex-1 space-y-1">
+              <div className="text-xs text-center text-gray-500 mb-2">{day.day}</div>
+              <div className="flex flex-col space-y-1">
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${day.coding * 20}px` }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  className="bg-blue-500 rounded-sm"
+                  title={`Coding: ${day.coding}h`}
+                />
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${day.quiz * 20}px` }}
+                  transition={{ duration: 0.8, delay: index * 0.1 + 0.2 }}
+                  className="bg-green-500 rounded-sm"
+                  title={`Quiz: ${day.quiz}h`}
+                />
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: `${day.practice * 20}px` }}
+                  transition={{ duration: 0.8, delay: index * 0.1 + 0.4 }}
+                  className="bg-purple-500 rounded-sm"
+                  title={`Practice: ${day.practice}h`}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex items-center justify-center space-x-6 mt-4 text-sm">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-blue-500 rounded-sm" />
+            <span>Coding</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-green-500 rounded-sm" />
+            <span>Quiz</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-purple-500 rounded-sm" />
+            <span>Practice</span>
+          </div>
         </div>
       </div>
     </motion.div>

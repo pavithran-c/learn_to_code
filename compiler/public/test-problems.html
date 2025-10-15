@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Practice Arena API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .problem { border: 1px solid #ccc; margin: 10px; padding: 15px; border-radius: 5px; }
+        .difficulty { padding: 3px 8px; border-radius: 3px; color: white; font-size: 12px; }
+        .easy { background-color: green; }
+        .medium { background-color: orange; }
+        .hard { background-color: red; }
+        .description { margin: 10px 0; white-space: pre-wrap; }
+        .constraints { background-color: #f5f5f5; padding: 10px; margin: 5px 0; }
+        .solution { background-color: #e8f4fd; padding: 10px; margin: 5px 0; }
+        pre { background-color: #f0f0f0; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Practice Arena - Problem Data Test</h1>
+    <div id="status">Loading problems...</div>
+    <div id="problems"></div>
+
+    <script>
+        async function testProblems() {
+            try {
+                const response = await fetch('http://localhost:5000/api/problems');
+                const problems = await response.json();
+                
+                document.getElementById('status').innerHTML = `
+                    ✅ Successfully loaded ${problems.length} problems<br>
+                    📊 API Response Size: ${response.headers.get('content-length')} bytes
+                `;
+                
+                // Show first 3 problems to verify structure
+                const problemsDiv = document.getElementById('problems');
+                problems.slice(0, 3).forEach((problem, index) => {
+                    const problemDiv = document.createElement('div');
+                    problemDiv.className = 'problem';
+                    problemDiv.innerHTML = `
+                        <h3>${problem.title} <span class="difficulty ${problem.difficulty.toLowerCase()}">${problem.difficulty}</span></h3>
+                        <p><strong>ID:</strong> ${problem.id}</p>
+                        <p><strong>Category:</strong> ${problem.topics ? problem.topics.join(', ') : 'N/A'}</p>
+                        <p><strong>Points:</strong> ${problem.points || 'N/A'}</p>
+                        
+                        <div class="description">
+                            <strong>Description:</strong><br>
+                            ${problem.statement_markdown || problem.description || 'No description available'}
+                        </div>
+                        
+                        ${problem.constraints ? `
+                            <div class="constraints">
+                                <strong>Constraints:</strong><br>
+                                ${Array.isArray(problem.constraints) ? 
+                                    problem.constraints.map(c => `• ${c}`).join('<br>') : 
+                                    problem.constraints}
+                            </div>
+                        ` : ''}
+                        
+                        ${problem.editorial ? `
+                            <div class="solution">
+                                <strong>Editorial:</strong><br>
+                                ${problem.editorial}
+                            </div>
+                        ` : ''}
+                        
+                        ${problem.canonical_solution?.Python ? `
+                            <div>
+                                <strong>Python Solution:</strong>
+                                <pre>${problem.canonical_solution.Python.code}</pre>
+                                ${problem.canonical_solution.Python.time_complexity ? 
+                                    `<p><strong>Time:</strong> ${problem.canonical_solution.Python.time_complexity}, <strong>Space:</strong> ${problem.canonical_solution.Python.space_complexity}</p>` : 
+                                    ''}
+                            </div>
+                        ` : ''}
+                        
+                        ${problem.hints ? `
+                            <div>
+                                <strong>Hints:</strong>
+                                <ul>${problem.hints.map(hint => `<li>${hint}</li>`).join('')}</ul>
+                            </div>
+                        ` : ''}
+                    `;
+                    problemsDiv.appendChild(problemDiv);
+                });
+                
+                // Check difficulty distribution
+                const difficulties = problems.reduce((acc, p) => {
+                    acc[p.difficulty] = (acc[p.difficulty] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                document.getElementById('status').innerHTML += `<br>📈 Distribution: ${JSON.stringify(difficulties)}`;
+                
+            } catch (error) {
+                document.getElementById('status').innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        testProblems();
+    </script>
+</body>
+</html>
