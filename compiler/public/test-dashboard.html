@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard User Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            background-color: #f9f9f9;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .error {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .info {
+            color: #2196F3;
+            font-weight: bold;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .code-block {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Dashboard User Display Test</h1>
+        
+        <div class="test-section">
+            <h2>🎯 Test Objective</h2>
+            <p>Verify that the Dashboard component shows the logged-in user's name (<strong>Sujith</strong>) instead of the hardcoded "Alex Thompson".</p>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Code Changes Made</h2>
+            <p>Modified the <code>loadUserData</code> function in Dashboard.jsx to:</p>
+            <div class="code-block">
+// Override profile data with authenticated user information<br>
+if (user) {<br>
+&nbsp;&nbsp;data.profile.name = user.name || user.email?.split('@')[0] || 'User';<br>
+&nbsp;&nbsp;data.profile.avatar = (user.name || user.email?.split('@')[0] || 'User').charAt(0).toUpperCase() + <br>
+&nbsp;&nbsp;&nbsp;&nbsp;(user.name ? user.name.split(' ')[1]?.charAt(0)?.toUpperCase() || '' : user.email?.split('@')[0]?.charAt(1)?.toUpperCase() || '');<br>
+}
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🧪 Test Actions</h2>
+            <button onclick="simulateUser()">🔄 Simulate Sujith Login</button>
+            <button onclick="clearUser()">🗑️ Clear User Data</button>
+            <button onclick="checkStorage()">📊 Check Current Storage</button>
+            <button onclick="goToDashboard()">📈 Go to Dashboard</button>
+        </div>
+
+        <div class="test-section">
+            <h2>📊 Current Status</h2>
+            <div id="status"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>✅ Expected Results</h2>
+            <ul>
+                <li><span class="success">✓</span> Dashboard should display "Sujith Kumar" or "sujith" as the user name</li>
+                <li><span class="success">✓</span> User avatar should show "SK" (Sujith Kumar initials)</li>
+                <li><span class="error">✗</span> Should NOT show "Alex Thompson" or "AT"</li>
+                <li><span class="success">✓</span> User data should persist across page refreshes</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function simulateUser() {
+            const testUser = {
+                id: 'test123',
+                name: 'Sujith Kumar',
+                email: 'sujith@example.com',
+                avatar: 'SK'
+            };
+
+            const testTokens = {
+                access_token: 'test_access_token_123',
+                refresh_token: 'test_refresh_token_456'
+            };
+
+            localStorage.setItem('user', JSON.stringify(testUser));
+            localStorage.setItem('access_token', testTokens.access_token);
+            localStorage.setItem('refresh_token', testTokens.refresh_token);
+
+            document.getElementById('status').innerHTML = `
+                <div class="success">✅ Simulated Sujith login successfully!</div>
+                <div class="info">User: ${testUser.name} (${testUser.email})</div>
+                <div class="info">Avatar: ${testUser.avatar}</div>
+                <div>Now navigate to the Dashboard to see the changes.</div>
+            `;
+        }
+
+        function clearUser() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            document.getElementById('status').innerHTML = `
+                <div class="error">🗑️ User data cleared</div>
+                <div>Dashboard should now show default/no user state.</div>
+            `;
+        }
+
+        function checkStorage() {
+            const user = localStorage.getItem('user');
+            const token = localStorage.getItem('access_token');
+            
+            if (user) {
+                const userData = JSON.parse(user);
+                document.getElementById('status').innerHTML = `
+                    <div class="success">✅ User data found in storage:</div>
+                    <div class="info">Name: ${userData.name || 'Not set'}</div>
+                    <div class="info">Email: ${userData.email || 'Not set'}</div>
+                    <div class="info">Token: ${token ? 'Present' : 'Missing'}</div>
+                `;
+            } else {
+                document.getElementById('status').innerHTML = `
+                    <div class="error">❌ No user data in storage</div>
+                    <div>User needs to login or simulate login for testing.</div>
+                `;
+            }
+        }
+
+        function goToDashboard() {
+            window.open('/dashboard', '_blank');
+        }
+
+        // Check status on page load
+        window.onload = function() {
+            checkStorage();
+        };
+    </script>
+</body>
+</html>

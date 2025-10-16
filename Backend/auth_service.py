@@ -79,17 +79,33 @@ class AuthService:
             )
             
             print(f"✅ Token verified for user: {payload.get('email', 'unknown')}")
-            return payload
+            return {
+                'valid': True,
+                'payload': payload,
+                'error': None
+            }
             
         except jwt.ExpiredSignatureError:
             print("❌ Token expired")
-            raise Exception("Token has expired")
+            return {
+                'valid': False,
+                'payload': None,
+                'error': 'Token has expired'
+            }
         except jwt.InvalidTokenError as e:
             print(f"❌ Invalid token: {e}")
-            raise Exception("Invalid token")
+            return {
+                'valid': False,
+                'payload': None,
+                'error': 'Invalid token'
+            }
         except Exception as e:
             print(f"❌ Token verification error: {e}")
-            raise Exception(f"Token verification failed: {str(e)}")
+            return {
+                'valid': False,
+                'payload': None,
+                'error': f'Token verification failed: {str(e)}'
+            }
 
     def hash_password(self, password: str) -> str:
         """Hash password using bcrypt"""

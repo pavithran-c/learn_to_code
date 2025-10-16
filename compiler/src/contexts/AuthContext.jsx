@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       const refreshToken = localStorage.getItem('refresh_token');
       
       if (token) {
-        await fetch(`${API_BASE_URL}/auth/logout`, {
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       if (!refreshToken) return;
       
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }) => {
       if (savedToken && savedUser) {
         try {
           // Verify token is still valid
-          const response = await fetch(`${API_BASE_URL}/auth/verify-token`, {
+          const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -238,7 +238,7 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (userData) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -318,7 +318,7 @@ export const AuthProvider = ({ children }) => {
       const storedRefreshToken = localStorage.getItem('refresh_token');
       if (!storedRefreshToken) return false;
 
-      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

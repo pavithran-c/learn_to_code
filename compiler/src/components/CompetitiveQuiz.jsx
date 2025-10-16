@@ -4,7 +4,7 @@ import { Clock, CheckCircle, XCircle, Play, RotateCcw } from 'lucide-react';
 
 const USER_ID = 'demo_user';
 
-// Mock quiz data - no API calls needed
+// Mock quiz data - expanded with many more questions across different topics
 const mockQuizQuestions = [
   {
     question: "What is the time complexity of binary search?",
@@ -35,6 +35,126 @@ const mockQuizQuestions = [
     choices: ["O(1)", "O(log n)", "O(n)", "O(n²)"],
     correct_answer: "O(n)",
     difficulty: "hard"
+  },
+  {
+    question: "What is polymorphism in OOP?",
+    choices: ["Multiple inheritance", "Ability to take multiple forms", "Data hiding", "Code reusability"],
+    correct_answer: "Ability to take multiple forms",
+    difficulty: "medium"
+  },
+  {
+    question: "Which HTTP status code indicates 'Not Found'?",
+    choices: ["200", "404", "500", "403"],
+    correct_answer: "404",
+    difficulty: "easy"
+  },
+  {
+    question: "What is the worst-case time complexity of quicksort?",
+    choices: ["O(n log n)", "O(n)", "O(n²)", "O(log n)"],
+    correct_answer: "O(n²)",
+    difficulty: "medium"
+  },
+  {
+    question: "Which of the following is NOT a NoSQL database?",
+    choices: ["MongoDB", "Cassandra", "MySQL", "Redis"],
+    correct_answer: "MySQL",
+    difficulty: "medium"
+  },
+  {
+    question: "What does REST stand for?",
+    choices: ["Representational State Transfer", "Remote State Transfer", "Relational State Transfer", "Responsive State Transfer"],
+    correct_answer: "Representational State Transfer",
+    difficulty: "medium"
+  },
+  {
+    question: "What is the purpose of a hash function?",
+    choices: ["Encrypt data", "Compress data", "Map data to fixed-size values", "Sort data"],
+    correct_answer: "Map data to fixed-size values",
+    difficulty: "medium"
+  },
+  {
+    question: "Which design pattern ensures only one instance of a class?",
+    choices: ["Factory", "Observer", "Singleton", "Strategy"],
+    correct_answer: "Singleton",
+    difficulty: "medium"
+  },
+  {
+    question: "What is the main advantage of using indexing in databases?",
+    choices: ["Reduces storage space", "Improves query performance", "Prevents data corruption", "Enables data encryption"],
+    correct_answer: "Improves query performance",
+    difficulty: "medium"
+  },
+  {
+    question: "What is Big O notation used for?",
+    choices: ["Memory usage only", "Time complexity only", "Both time and space complexity", "Code readability"],
+    correct_answer: "Both time and space complexity",
+    difficulty: "easy"
+  },
+  {
+    question: "Which protocol is used for secure web communication?",
+    choices: ["HTTP", "HTTPS", "FTP", "SMTP"],
+    correct_answer: "HTTPS",
+    difficulty: "easy"
+  },
+  {
+    question: "What is the difference between stack and heap memory?",
+    choices: ["Stack is dynamic, heap is static", "Stack stores primitives, heap stores objects", "No difference", "Stack is larger than heap"],
+    correct_answer: "Stack stores primitives, heap stores objects",
+    difficulty: "hard"
+  },
+  {
+    question: "What is a deadlock in operating systems?",
+    choices: ["System crash", "Two processes waiting for each other indefinitely", "Memory leak", "CPU overload"],
+    correct_answer: "Two processes waiting for each other indefinitely",
+    difficulty: "hard"
+  },
+  {
+    question: "Which algorithm is used for finding shortest path in graphs?",
+    choices: ["DFS", "BFS", "Dijkstra's", "Kruskal's"],
+    correct_answer: "Dijkstra's",
+    difficulty: "medium"
+  },
+  {
+    question: "What is the purpose of virtual memory?",
+    choices: ["Increase CPU speed", "Extend available memory", "Improve security", "Reduce power consumption"],
+    correct_answer: "Extend available memory",
+    difficulty: "medium"
+  },
+  {
+    question: "What is a race condition?",
+    choices: ["Fast execution", "Competing processes accessing shared resource", "Memory overflow", "Network congestion"],
+    correct_answer: "Competing processes accessing shared resource",
+    difficulty: "hard"
+  },
+  {
+    question: "Which data structure is best for implementing LRU cache?",
+    choices: ["Array", "Stack", "HashMap + Doubly Linked List", "Binary Tree"],
+    correct_answer: "HashMap + Doubly Linked List",
+    difficulty: "hard"
+  },
+  {
+    question: "What is the main purpose of load balancing?",
+    choices: ["Save electricity", "Distribute workload across servers", "Encrypt data", "Monitor performance"],
+    correct_answer: "Distribute workload across servers",
+    difficulty: "medium"
+  },
+  {
+    question: "What is the difference between TCP and UDP?",
+    choices: ["TCP is faster", "UDP is more reliable", "TCP is connection-oriented, UDP is connectionless", "No difference"],
+    correct_answer: "TCP is connection-oriented, UDP is connectionless",
+    difficulty: "medium"
+  },
+  {
+    question: "What is machine learning?",
+    choices: ["Hardware automation", "Teaching computers to learn from data", "Software testing", "Network security"],
+    correct_answer: "Teaching computers to learn from data",
+    difficulty: "easy"
+  },
+  {
+    question: "What is the purpose of normalization in databases?",
+    choices: ["Increase data size", "Reduce data redundancy", "Slow down queries", "Add more tables"],
+    correct_answer: "Reduce data redundancy",
+    difficulty: "medium"
   }
 ];
 

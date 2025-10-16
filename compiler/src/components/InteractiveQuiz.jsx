@@ -2,9 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Brain, Clock, Trophy, Target, Star, CheckCircle, XCircle,
-  Play, ArrowRight, ArrowLeft, Code2
+  Play, ArrowRight, ArrowLeft, Code2, BarChart3
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import quizAnalyticsService from '../services/quizAnalyticsService';
+import QuizPerformanceAnalytics from './QuizPerformanceAnalytics';
 
 // Comprehensive Quiz Data - All programming concepts and questions
 const comprehensiveQuizData = {
@@ -13,7 +15,7 @@ const comprehensiveQuizData = {
     id: 'programming_fundamentals',
     title: 'Programming Fundamentals',
     description: 'Core programming concepts and syntax',
-    timeLimit: 600, // 10 minutes
+    timeLimit: 900, // 15 minutes (increased for more questions)
     questions: [
       {
         id: 1,
@@ -74,6 +76,131 @@ const comprehensiveQuizData = {
         difficulty: 'hard',
         points: 20,
         topic: 'Concurrency'
+      },
+      {
+        id: 6,
+        question: "Which of the following is a mutable data type in Python?",
+        options: ['String', 'Tuple', 'List', 'Integer'],
+        correct_answer: 'List',
+        explanation: 'Lists in Python are mutable, meaning you can modify them after creation. Strings, tuples, and integers are immutable.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Data Types'
+      },
+      {
+        id: 7,
+        question: "What is the output of this C++ code?\n\n```cpp\nint x = 5;\nint &y = x;\ny = 10;\ncout << x;\n```",
+        options: ['5', '10', 'Error', 'Undefined'],
+        correct_answer: '10',
+        explanation: 'y is a reference to x, so changing y also changes x. Both variables point to the same memory location.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'References'
+      },
+      {
+        id: 8,
+        question: "Which principle is NOT part of Object-Oriented Programming?",
+        options: ['Encapsulation', 'Inheritance', 'Polymorphism', 'Compilation'],
+        correct_answer: 'Compilation',
+        explanation: 'The four main OOP principles are Encapsulation, Inheritance, Polymorphism, and Abstraction. Compilation is not an OOP principle.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'OOP Concepts'
+      },
+      {
+        id: 9,
+        question: "What is the time complexity of accessing an element in an array by index?",
+        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
+        correct_answer: 'O(1)',
+        explanation: 'Array elements can be accessed directly using their index in constant time, regardless of array size.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Time Complexity'
+      },
+      {
+        id: 10,
+        question: "In Python, what does the 'self' parameter represent?",
+        options: [
+          'A global variable',
+          'The current instance of the class',
+          'A static method',
+          'The class itself'
+        ],
+        correct_answer: 'The current instance of the class',
+        explanation: 'self refers to the current instance of the class and is used to access instance variables and methods.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Class Methods'
+      },
+      {
+        id: 11,
+        question: "What is the difference between 'let' and 'var' in JavaScript?",
+        options: [
+          'No difference',
+          'let has block scope, var has function scope',
+          'var has block scope, let has function scope',
+          'let is faster than var'
+        ],
+        correct_answer: 'let has block scope, var has function scope',
+        explanation: 'let variables are scoped to the nearest enclosing block, while var variables are scoped to the function.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Variable Scope'
+      },
+      {
+        id: 12,
+        question: "Which sorting algorithm has the best worst-case time complexity?",
+        options: ['Quick Sort', 'Merge Sort', 'Bubble Sort', 'Selection Sort'],
+        correct_answer: 'Merge Sort',
+        explanation: 'Merge Sort has O(n log n) time complexity in all cases (best, average, worst), making it consistent.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Sorting Algorithms'
+      },
+      {
+        id: 13,
+        question: "What is a closure in programming?",
+        options: [
+          'A way to close a program',
+          'A function that has access to outer scope variables',
+          'A loop termination condition',
+          'A class destructor'
+        ],
+        correct_answer: 'A function that has access to outer scope variables',
+        explanation: 'A closure is a function that retains access to variables from its outer (enclosing) scope even after the outer function returns.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Closures'
+      },
+      {
+        id: 14,
+        question: "In SQL, what does the INNER JOIN do?",
+        options: [
+          'Returns all records from both tables',
+          'Returns records that have matching values in both tables',
+          'Returns records from the left table only',
+          'Returns records from the right table only'
+        ],
+        correct_answer: 'Returns records that have matching values in both tables',
+        explanation: 'INNER JOIN returns only the rows where there is a match in both tables based on the join condition.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'SQL Joins'
+      },
+      {
+        id: 15,
+        question: "What is the purpose of the 'static' keyword in Java?",
+        options: [
+          'Makes variables immutable',
+          'Belongs to the class rather than instance',
+          'Prevents inheritance',
+          'Enables multithreading'
+        ],
+        correct_answer: 'Belongs to the class rather than instance',
+        explanation: 'static members belong to the class itself rather than any specific instance, shared across all objects.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Static Members'
       }
     ]
   },
@@ -83,7 +210,7 @@ const comprehensiveQuizData = {
     id: 'data_structures',
     title: 'Data Structures & Algorithms',
     description: 'Arrays, trees, graphs, and algorithmic thinking',
-    timeLimit: 900, // 15 minutes
+    timeLimit: 1200, // 20 minutes (increased for more questions)
     questions: [
       {
         id: 1,
@@ -125,20 +252,180 @@ const comprehensiveQuizData = {
           'The table is resized'
         ],
         correct_answer: 'Both keys are stored in a linked list at that index',
-        explanation: 'Chaining resolves hash collisions by storing multiple elements in a linked list at the same index.',
+        explanation: 'Chaining resolves collisions by storing multiple key-value pairs in a linked list at the same index.',
         difficulty: 'medium',
         points: 15,
         topic: 'Hash Tables'
       },
       {
         id: 5,
-        question: "What is the space complexity of the recursive implementation of Fibonacci sequence?",
-        options: ['O(1)', 'O(log n)', 'O(n)', 'O(2^n)'],
+        question: "What is the space complexity of merge sort?",
+        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
         correct_answer: 'O(n)',
-        explanation: 'Due to the call stack depth, recursive Fibonacci has O(n) space complexity (with memoization) or O(n) maximum stack depth.',
+        explanation: 'Merge sort requires O(n) additional space for the temporary arrays used during merging.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Space Complexity'
+      },
+      {
+        id: 6,
+        question: "Which traversal method visits nodes in a binary tree level by level?",
+        options: ['Inorder', 'Preorder', 'Postorder', 'Level-order'],
+        correct_answer: 'Level-order',
+        explanation: 'Level-order traversal (also called breadth-first traversal) visits nodes level by level from left to right.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Tree Traversal'
+      },
+      {
+        id: 7,
+        question: "What is the worst-case time complexity of Quick Sort?",
+        options: ['O(n log n)', 'O(n)', 'O(n²)', 'O(log n)'],
+        correct_answer: 'O(n²)',
+        explanation: 'Quick Sort has O(n²) worst-case time complexity when the pivot is always the smallest or largest element.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Quick Sort'
+      },
+      {
+        id: 8,
+        question: "In a heap, what is the relationship between a parent node and its children?",
+        options: [
+          'Parent is always smaller than children',
+          'Parent is always larger than children (max heap)',
+          'No specific relationship',
+          'Children are always equal'
+        ],
+        correct_answer: 'Parent is always larger than children (max heap)',
+        explanation: 'In a max heap, each parent node is greater than or equal to its children. In a min heap, it\'s the opposite.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Heap Data Structure'
+      },
+      {
+        id: 9,
+        question: "What algorithm is used to find the shortest path in a weighted graph?",
+        options: ['BFS', 'DFS', 'Dijkstra\'s Algorithm', 'Linear Search'],
+        correct_answer: 'Dijkstra\'s Algorithm',
+        explanation: 'Dijkstra\'s algorithm finds the shortest path from a source vertex to all other vertices in a weighted graph.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Graph Algorithms'
+      },
+      {
+        id: 10,
+        question: "What is the time complexity of inserting an element at the beginning of a linked list?",
+        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
+        correct_answer: 'O(1)',
+        explanation: 'Inserting at the beginning of a linked list takes constant time as you only need to update the head pointer.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Linked Lists'
+      },
+      {
+        id: 11,
+        question: "Which data structure would be most efficient for implementing a function call stack?",
+        options: ['Array', 'Queue', 'Stack', 'Hash Table'],
+        correct_answer: 'Stack',
+        explanation: 'Function calls follow LIFO principle - the most recent function called is the first to return, making stack ideal.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Stack Applications'
+      },
+      {
+        id: 12,
+        question: "What is a complete binary tree?",
+        options: [
+          'A tree where all nodes have two children',
+          'A tree where all levels are filled except possibly the last',
+          'A tree where all leaves are at the same level',
+          'A tree with exactly 2^n nodes'
+        ],
+        correct_answer: 'A tree where all levels are filled except possibly the last',
+        explanation: 'A complete binary tree has all levels filled except possibly the last level, which is filled from left to right.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Binary Trees'
+      },
+      {
+        id: 13,
+        question: "What is the primary advantage of using a trie data structure?",
+        options: [
+          'Fast numerical calculations',
+          'Efficient string search and prefix matching',
+          'Memory optimization for integers',
+          'Fast sorting operations'
+        ],
+        correct_answer: 'Efficient string search and prefix matching',
+        explanation: 'Tries excel at string operations, especially prefix matching and autocomplete functionality.',
         difficulty: 'hard',
         points: 20,
-        topic: 'Recursion & Dynamic Programming'
+        topic: 'Trie Data Structure'
+      },
+      {
+        id: 14,
+        question: "In dynamic programming, what does memoization mean?",
+        options: [
+          'Forgetting previous calculations',
+          'Storing results of expensive function calls',
+          'Using more memory than needed',
+          'Optimizing memory usage'
+        ],
+        correct_answer: 'Storing results of expensive function calls',
+        explanation: 'Memoization stores the results of expensive function calls to avoid redundant calculations.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Dynamic Programming'
+      },
+      {
+        id: 15,
+        question: "What is the time complexity of finding the maximum element in an unsorted array?",
+        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
+        correct_answer: 'O(n)',
+        explanation: 'To find the maximum in an unsorted array, you must examine each element at least once, giving O(n) complexity.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Array Operations'
+      },
+      {
+        id: 16,
+        question: "Which algorithm is best for detecting cycles in a linked list?",
+        options: ['Linear Search', 'Binary Search', 'Floyd\'s Cycle Detection', 'Merge Sort'],
+        correct_answer: 'Floyd\'s Cycle Detection',
+        explanation: 'Floyd\'s algorithm (tortoise and hare) uses two pointers moving at different speeds to detect cycles efficiently.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Cycle Detection'
+      },
+      {
+        id: 17,
+        question: "What is the main benefit of using a balanced binary search tree over an unbalanced one?",
+        options: [
+          'Uses less memory',
+          'Guarantees O(log n) operations',
+          'Easier to implement',
+          'Supports more operations'
+        ],
+        correct_answer: 'Guarantees O(log n) operations',
+        explanation: 'Balanced BSTs maintain their height at O(log n), ensuring efficient search, insert, and delete operations.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Balanced Trees'
+      },
+      {
+        id: 18,
+        question: "In graph theory, what is a strongly connected component?",
+        options: [
+          'A component with the most edges',
+          'A maximal set of vertices where every vertex is reachable from every other',
+          'A component with no cycles',
+          'The largest component in a graph'
+        ],
+        correct_answer: 'A maximal set of vertices where every vertex is reachable from every other',
+        explanation: 'A strongly connected component is a maximal set of vertices where there is a path from each vertex to every other vertex.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Graph Theory'
       }
     ]
   },
@@ -148,7 +435,7 @@ const comprehensiveQuizData = {
     id: 'web_development',
     title: 'Web Development',
     description: 'Frontend, backend, and full-stack concepts',
-    timeLimit: 600, // 10 minutes
+    timeLimit: 900, // 15 minutes (increased for more questions)
     questions: [
       {
         id: 1,
@@ -214,6 +501,461 @@ const comprehensiveQuizData = {
         difficulty: 'hard',
         points: 20,
         topic: 'Web Security'
+      },
+      {
+        id: 6,
+        question: "What is the difference between '==' and '===' in JavaScript?",
+        options: [
+          'No difference',
+          '=== checks type and value, == only checks value',
+          '== is faster than ===',
+          '=== is for strings only'
+        ],
+        correct_answer: '=== checks type and value, == only checks value',
+        explanation: '=== performs strict equality comparison (type and value), while == performs type coercion.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'JavaScript Operators'
+      },
+      {
+        id: 7,
+        question: "What is the purpose of the viewport meta tag?",
+        options: [
+          'To set page title',
+          'To control layout on mobile browsers',
+          'To load external stylesheets',
+          'To define character encoding'
+        ],
+        correct_answer: 'To control layout on mobile browsers',
+        explanation: 'The viewport meta tag controls layout on mobile browsers by setting the viewport width and initial scale.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Responsive Design'
+      },
+      {
+        id: 8,
+        question: "What is a RESTful API?",
+        options: [
+          'A database management system',
+          'An architectural style for web services',
+          'A JavaScript framework',
+          'A CSS preprocessor'
+        ],
+        correct_answer: 'An architectural style for web services',
+        explanation: 'REST is an architectural style that defines principles for designing networked applications.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'API Design'
+      },
+      {
+        id: 9,
+        question: "What is the purpose of webpack?",
+        options: [
+          'To create web components',
+          'To bundle and optimize web assets',
+          'To test web applications',
+          'To deploy web applications'
+        ],
+        correct_answer: 'To bundle and optimize web assets',
+        explanation: 'Webpack is a module bundler that processes and bundles JavaScript, CSS, and other assets.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Build Tools'
+      },
+      {
+        id: 10,
+        question: "What is the difference between client-side and server-side rendering?",
+        options: [
+          'No difference',
+          'Client-side renders in browser, server-side on server',
+          'Client-side is always faster',
+          'Server-side uses more bandwidth'
+        ],
+        correct_answer: 'Client-side renders in browser, server-side on server',
+        explanation: 'Client-side rendering happens in the browser using JavaScript, while server-side rendering happens on the server.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Rendering Strategies'
+      },
+      {
+        id: 11,
+        question: "What is the purpose of semantic HTML?",
+        options: [
+          'To improve styling',
+          'To provide meaning and structure to content',
+          'To reduce file size',
+          'To enable animations'
+        ],
+        correct_answer: 'To provide meaning and structure to content',
+        explanation: 'Semantic HTML uses meaningful elements to describe content structure, improving accessibility and SEO.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'HTML Semantics'
+      },
+      {
+        id: 12,
+        question: "What is a Promise in JavaScript?",
+        options: [
+          'A type of variable',
+          'An object representing eventual completion of an async operation',
+          'A CSS property',
+          'A HTML element'
+        ],
+        correct_answer: 'An object representing eventual completion of an async operation',
+        explanation: 'Promises represent asynchronous operations and their eventual completion or failure.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Asynchronous JavaScript'
+      }
+    ]
+  },
+
+  // Machine Learning & AI
+  machine_learning: {
+    id: 'machine_learning',
+    title: 'Machine Learning & AI',
+    description: 'ML algorithms, neural networks, and AI concepts',
+    timeLimit: 900, // 15 minutes
+    questions: [
+      {
+        id: 1,
+        question: "What is supervised learning?",
+        options: [
+          'Learning without any data',
+          'Learning with labeled training data',
+          'Learning from unlabeled data',
+          'Learning from reinforcement'
+        ],
+        correct_answer: 'Learning with labeled training data',
+        explanation: 'Supervised learning uses labeled training data to learn a mapping from inputs to outputs.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'ML Fundamentals'
+      },
+      {
+        id: 2,
+        question: "What is overfitting in machine learning?",
+        options: [
+          'Model performs well on training and test data',
+          'Model performs poorly on both training and test data',
+          'Model performs well on training but poorly on test data',
+          'Model takes too long to train'
+        ],
+        correct_answer: 'Model performs well on training but poorly on test data',
+        explanation: 'Overfitting occurs when a model learns the training data too well and fails to generalize to new data.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Model Evaluation'
+      },
+      {
+        id: 3,
+        question: "What is the purpose of a validation set?",
+        options: [
+          'To train the model',
+          'To test final performance',
+          'To tune hyperparameters',
+          'To store backup data'
+        ],
+        correct_answer: 'To tune hyperparameters',
+        explanation: 'Validation sets are used to tune hyperparameters and select the best model without touching the test set.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Data Splitting'
+      },
+      {
+        id: 4,
+        question: "What is the difference between precision and recall?",
+        options: [
+          'They are the same metric',
+          'Precision: TP/(TP+FP), Recall: TP/(TP+FN)',
+          'Precision is for classification, recall for regression',
+          'Precision is always higher than recall'
+        ],
+        correct_answer: 'Precision: TP/(TP+FP), Recall: TP/(TP+FN)',
+        explanation: 'Precision measures how many predicted positives are correct, recall measures how many actual positives were found.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Classification Metrics'
+      },
+      {
+        id: 5,
+        question: "What is gradient descent?",
+        options: [
+          'A data preprocessing technique',
+          'An optimization algorithm to minimize loss functions',
+          'A neural network architecture',
+          'A feature selection method'
+        ],
+        correct_answer: 'An optimization algorithm to minimize loss functions',
+        explanation: 'Gradient descent iteratively updates parameters to minimize the loss function by following the negative gradient.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Optimization'
+      },
+      {
+        id: 6,
+        question: "What is a neural network activation function?",
+        options: [
+          'A function to preprocess data',
+          'A function that determines neuron output',
+          'A function to split data',
+          'A function to save models'
+        ],
+        correct_answer: 'A function that determines neuron output',
+        explanation: 'Activation functions determine whether a neuron should be activated based on weighted input sum.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Neural Networks'
+      },
+      {
+        id: 7,
+        question: "What is the purpose of regularization?",
+        options: [
+          'To increase model complexity',
+          'To prevent overfitting',
+          'To speed up training',
+          'To increase accuracy'
+        ],
+        correct_answer: 'To prevent overfitting',
+        explanation: 'Regularization techniques add constraints to prevent the model from becoming too complex and overfitting.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Regularization'
+      },
+      {
+        id: 8,
+        question: "What is the difference between classification and regression?",
+        options: [
+          'No difference',
+          'Classification predicts categories, regression predicts continuous values',
+          'Classification is unsupervised, regression is supervised',
+          'Classification is faster than regression'
+        ],
+        correct_answer: 'Classification predicts categories, regression predicts continuous values',
+        explanation: 'Classification tasks predict discrete categories/classes, while regression predicts continuous numerical values.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Problem Types'
+      }
+    ]
+  },
+
+  // Cybersecurity
+  cybersecurity: {
+    id: 'cybersecurity',
+    title: 'Cybersecurity',
+    description: 'Security principles, threats, and protection mechanisms',
+    timeLimit: 900, // 15 minutes
+    questions: [
+      {
+        id: 1,
+        question: "What is the principle of least privilege?",
+        options: [
+          'Give users maximum access for convenience',
+          'Give users minimum access required for their job',
+          'Remove all user privileges',
+          'Give everyone admin access'
+        ],
+        correct_answer: 'Give users minimum access required for their job',
+        explanation: 'Least privilege means granting only the minimum access rights necessary to perform required tasks.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Security Principles'
+      },
+      {
+        id: 2,
+        question: "What is a SQL injection attack?",
+        options: [
+          'Injecting malicious code into database queries',
+          'Stealing SQL database files',
+          'Breaking SQL server hardware',
+          'Encrypting SQL databases'
+        ],
+        correct_answer: 'Injecting malicious code into database queries',
+        explanation: 'SQL injection involves inserting malicious SQL code into application queries to manipulate database operations.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Web Security'
+      },
+      {
+        id: 3,
+        question: "What is two-factor authentication (2FA)?",
+        options: [
+          'Using two passwords',
+          'Logging in twice',
+          'Using two different authentication factors',
+          'Having two user accounts'
+        ],
+        correct_answer: 'Using two different authentication factors',
+        explanation: '2FA combines two different factors (something you know, have, or are) for stronger authentication.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Authentication'
+      },
+      {
+        id: 4,
+        question: "What is a DDoS attack?",
+        options: [
+          'Distributed Denial of Service',
+          'Direct Database of Service',
+          'Dynamic Domain of Security',
+          'Dedicated Deployment of Systems'
+        ],
+        correct_answer: 'Distributed Denial of Service',
+        explanation: 'DDoS attacks overwhelm a target with traffic from multiple sources to disrupt service availability.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Network Security'
+      },
+      {
+        id: 5,
+        question: "What is encryption?",
+        options: [
+          'Compressing data to save space',
+          'Converting data into unreadable format',
+          'Backing up data',
+          'Deleting sensitive data'
+        ],
+        correct_answer: 'Converting data into unreadable format',
+        explanation: 'Encryption transforms readable data into an unreadable format that can only be decoded with the proper key.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Cryptography'
+      },
+      {
+        id: 6,
+        question: "What is the difference between symmetric and asymmetric encryption?",
+        options: [
+          'No difference',
+          'Symmetric uses one key, asymmetric uses two keys',
+          'Symmetric is faster, asymmetric is slower',
+          'Both symmetric uses one key and asymmetric uses two keys, and symmetric is faster'
+        ],
+        correct_answer: 'Both symmetric uses one key and asymmetric uses two keys, and symmetric is faster',
+        explanation: 'Symmetric encryption uses one shared key, while asymmetric uses a key pair (public/private). Symmetric is typically faster.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Encryption Types'
+      },
+      {
+        id: 7,
+        question: "What is a firewall?",
+        options: [
+          'Software to prevent computer overheating',
+          'Network security system that monitors traffic',
+          'Backup storage system',
+          'Virus scanning software'
+        ],
+        correct_answer: 'Network security system that monitors traffic',
+        explanation: 'Firewalls monitor and control incoming and outgoing network traffic based on predetermined security rules.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Network Security'
+      },
+      {
+        id: 8,
+        question: "What is social engineering in cybersecurity?",
+        options: [
+          'Building secure software',
+          'Manipulating people to divulge confidential information',
+          'Engineering social media platforms',
+          'Creating user communities'
+        ],
+        correct_answer: 'Manipulating people to divulge confidential information',
+        explanation: 'Social engineering exploits human psychology to trick people into revealing sensitive information or performing actions.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Human Factors'
+      }
+    ]
+  },
+
+  // Mobile Development
+  mobile_development: {
+    id: 'mobile_development',
+    title: 'Mobile Development',
+    description: 'iOS, Android, and cross-platform development',
+    timeLimit: 900, // 15 minutes
+    questions: [
+      {
+        id: 1,
+        question: "What is React Native?",
+        options: [
+          'A web framework',
+          'A cross-platform mobile development framework',
+          'A database system',
+          'A testing tool'
+        ],
+        correct_answer: 'A cross-platform mobile development framework',
+        explanation: 'React Native allows developers to build mobile apps for iOS and Android using JavaScript and React.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Cross-Platform Development'
+      },
+      {
+        id: 2,
+        question: "What is the main programming language for native iOS development?",
+        options: ['Java', 'Kotlin', 'Swift', 'JavaScript'],
+        correct_answer: 'Swift',
+        explanation: 'Swift is Apple\'s modern programming language for iOS, macOS, watchOS, and tvOS development.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'iOS Development'
+      },
+      {
+        id: 3,
+        question: "What is the main programming language for native Android development?",
+        options: ['Swift', 'Kotlin', 'C#', 'Python'],
+        correct_answer: 'Kotlin',
+        explanation: 'Kotlin is Google\'s preferred language for Android development, though Java is also supported.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Android Development'
+      },
+      {
+        id: 4,
+        question: "What is Flutter?",
+        options: [
+          'A database management system',
+          'Google\'s UI toolkit for cross-platform development',
+          'An iOS-only framework',
+          'A web server'
+        ],
+        correct_answer: 'Google\'s UI toolkit for cross-platform development',
+        explanation: 'Flutter is Google\'s framework for building natively compiled applications across multiple platforms from a single codebase.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Cross-Platform Development'
+      },
+      {
+        id: 5,
+        question: "What is the purpose of mobile app lifecycle methods?",
+        options: [
+          'To handle memory management',
+          'To manage app state transitions',
+          'To optimize performance',
+          'All of the above'
+        ],
+        correct_answer: 'All of the above',
+        explanation: 'Lifecycle methods help manage app states, memory, and performance during various app state transitions.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'App Lifecycle'
+      },
+      {
+        id: 6,
+        question: "What is responsive design in mobile development?",
+        options: [
+          'Fast app response time',
+          'Adapting UI to different screen sizes',
+          'Quick server responses',
+          'Real-time data updates'
+        ],
+        correct_answer: 'Adapting UI to different screen sizes',
+        explanation: 'Responsive design ensures that the user interface adapts gracefully to different screen sizes and orientations.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'UI/UX Design'
       }
     ]
   },
@@ -223,7 +965,7 @@ const comprehensiveQuizData = {
     id: 'databases',
     title: 'Database Systems',
     description: 'SQL, NoSQL, and database design principles',
-    timeLimit: 600, // 10 minutes
+    timeLimit: 900, // 15 minutes (increased for more questions)
     questions: [
       {
         id: 1,
@@ -376,6 +1118,206 @@ const comprehensiveQuizData = {
         topic: 'Database Consistency'
       }
     ]
+  },
+
+  // Operating Systems
+  operating_systems: {
+    id: 'operating_systems',
+    title: 'Operating Systems',
+    description: 'OS concepts, processes, memory management',
+    timeLimit: 900, // 15 minutes
+    questions: [
+      {
+        id: 1,
+        question: "What is a process in an operating system?",
+        options: [
+          'A running program with allocated resources',
+          'A static program file',
+          'A system command',
+          'A hardware component'
+        ],
+        correct_answer: 'A running program with allocated resources',
+        explanation: 'A process is an instance of a program in execution, with allocated memory, CPU time, and other system resources.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Process Management'
+      },
+      {
+        id: 2,
+        question: "What is the difference between a process and a thread?",
+        options: [
+          'No difference',
+          'Processes share memory, threads don\'t',
+          'Threads share memory within a process',
+          'Threads are faster than processes'
+        ],
+        correct_answer: 'Threads share memory within a process',
+        explanation: 'Threads are lightweight execution units within a process that share memory space, while processes have separate memory spaces.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Threads vs Processes'
+      },
+      {
+        id: 3,
+        question: "What is virtual memory?",
+        options: [
+          'Memory that doesn\'t exist',
+          'RAM simulation using disk space',
+          'Memory for virtual machines only',
+          'Compressed memory'
+        ],
+        correct_answer: 'RAM simulation using disk space',
+        explanation: 'Virtual memory allows the system to use disk space as an extension of RAM, providing more memory than physically available.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Memory Management'
+      },
+      {
+        id: 4,
+        question: "What is a deadlock?",
+        options: [
+          'A crashed process',
+          'Two or more processes waiting for each other indefinitely',
+          'A locked file',
+          'System shutdown'
+        ],
+        correct_answer: 'Two or more processes waiting for each other indefinitely',
+        explanation: 'Deadlock occurs when two or more processes are blocked forever, each waiting for the other to release resources.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Synchronization'
+      },
+      {
+        id: 5,
+        question: "What is the purpose of a scheduler in an OS?",
+        options: [
+          'To schedule meetings',
+          'To decide which process runs next',
+          'To schedule system updates',
+          'To manage file operations'
+        ],
+        correct_answer: 'To decide which process runs next',
+        explanation: 'The scheduler allocates CPU time to different processes, determining the order and duration of process execution.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'CPU Scheduling'
+      },
+      {
+        id: 6,
+        question: "What is the difference between preemptive and non-preemptive scheduling?",
+        options: [
+          'No difference',
+          'Preemptive can interrupt running processes',
+          'Non-preemptive is faster',
+          'Preemptive uses more memory'
+        ],
+        correct_answer: 'Preemptive can interrupt running processes',
+        explanation: 'Preemptive scheduling can forcibly remove a process from CPU, while non-preemptive waits for process to yield control.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Scheduling Types'
+      }
+    ]
+  },
+
+  // Computer Networks
+  computer_networks: {
+    id: 'computer_networks',
+    title: 'Computer Networks',
+    description: 'Network protocols, architecture, and security',
+    timeLimit: 900, // 15 minutes
+    questions: [
+      {
+        id: 1,
+        question: "What does TCP stand for?",
+        options: [
+          'Transfer Control Protocol',
+          'Transmission Control Protocol',
+          'Transport Control Protocol',
+          'Terminal Control Protocol'
+        ],
+        correct_answer: 'Transmission Control Protocol',
+        explanation: 'TCP (Transmission Control Protocol) is a reliable, connection-oriented protocol that ensures data delivery.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Network Protocols'
+      },
+      {
+        id: 2,
+        question: "What is the difference between TCP and UDP?",
+        options: [
+          'TCP is faster than UDP',
+          'UDP is more reliable than TCP',
+          'TCP is connection-oriented, UDP is connectionless',
+          'No significant difference'
+        ],
+        correct_answer: 'TCP is connection-oriented, UDP is connectionless',
+        explanation: 'TCP establishes connections and guarantees delivery, while UDP is connectionless and faster but unreliable.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Protocol Comparison'
+      },
+      {
+        id: 3,
+        question: "What is the purpose of DNS?",
+        options: [
+          'To encrypt data',
+          'To translate domain names to IP addresses',
+          'To compress network traffic',
+          'To monitor network performance'
+        ],
+        correct_answer: 'To translate domain names to IP addresses',
+        explanation: 'DNS (Domain Name System) converts human-readable domain names into IP addresses that computers can understand.',
+        difficulty: 'easy',
+        points: 10,
+        topic: 'Domain Name System'
+      },
+      {
+        id: 4,
+        question: "What is the OSI model?",
+        options: [
+          'A network security framework',
+          'A 7-layer network communication model',
+          'A type of router',
+          'A programming language for networks'
+        ],
+        correct_answer: 'A 7-layer network communication model',
+        explanation: 'The OSI model is a conceptual framework that standardizes network communication into 7 layers.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'Network Models'
+      },
+      {
+        id: 5,
+        question: "What is a subnet mask?",
+        options: [
+          'A security feature',
+          'A way to divide IP networks into smaller segments',
+          'A type of firewall',
+          'A network monitoring tool'
+        ],
+        correct_answer: 'A way to divide IP networks into smaller segments',
+        explanation: 'A subnet mask determines which part of an IP address represents the network and which part represents the host.',
+        difficulty: 'medium',
+        points: 15,
+        topic: 'IP Addressing'
+      },
+      {
+        id: 6,
+        question: "What is the difference between a hub and a switch?",
+        options: [
+          'No difference',
+          'Hub operates at physical layer, switch at data link layer',
+          'Switch is older technology',
+          'Hub is more secure'
+        ],
+        correct_answer: 'Hub operates at physical layer, switch at data link layer',
+        explanation: 'Hubs operate at Layer 1 (physical) and broadcast to all ports, while switches operate at Layer 2 (data link) and learn MAC addresses.',
+        difficulty: 'hard',
+        points: 20,
+        topic: 'Network Devices'
+      }
+    ]
   }
 };
 
@@ -394,6 +1336,8 @@ const InteractiveQuiz = () => {
   const [score, setScore] = useState(0);
   const [quizStarted, setQuizStarted] = useState(false);
   const [showCategorySelection, setShowCategorySelection] = useState(true);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [quizStartTime, setQuizStartTime] = useState(null);
   
   const { user } = useAuth();
 
@@ -404,8 +1348,8 @@ const InteractiveQuiz = () => {
       title: 'Programming Fundamentals',
       icon: '💻',
       description: 'Core programming concepts, syntax, and language basics',
-      questionCount: 5,
-      timeLimit: '10 min',
+      questionCount: 15,
+      timeLimit: '15 min',
       difficulty: 'Beginner to Intermediate'
     },
     {
@@ -413,8 +1357,8 @@ const InteractiveQuiz = () => {
       title: 'Data Structures & Algorithms',
       icon: '🌳',
       description: 'Arrays, trees, graphs, sorting, and algorithmic thinking',
-      questionCount: 5,
-      timeLimit: '15 min',
+      questionCount: 18,
+      timeLimit: '20 min',
       difficulty: 'Intermediate to Advanced'
     },
     {
@@ -422,9 +1366,36 @@ const InteractiveQuiz = () => {
       title: 'Web Development',
       icon: '🌐',
       description: 'Frontend, backend, HTTP, CSS, and web technologies',
-      questionCount: 5,
-      timeLimit: '10 min',
+      questionCount: 12,
+      timeLimit: '15 min',
       difficulty: 'Beginner to Advanced'
+    },
+    {
+      id: 'machine_learning',
+      title: 'Machine Learning & AI',
+      icon: '🤖',
+      description: 'ML algorithms, neural networks, and AI concepts',
+      questionCount: 8,
+      timeLimit: '15 min',
+      difficulty: 'Intermediate to Advanced'
+    },
+    {
+      id: 'cybersecurity',
+      title: 'Cybersecurity',
+      icon: '🔐',
+      description: 'Security principles, threats, and protection mechanisms',
+      questionCount: 8,
+      timeLimit: '15 min',
+      difficulty: 'Beginner to Advanced'
+    },
+    {
+      id: 'mobile_development',
+      title: 'Mobile Development',
+      icon: '📱',
+      description: 'iOS, Android, and cross-platform development',
+      questionCount: 6,
+      timeLimit: '15 min',
+      difficulty: 'Beginner to Intermediate'
     },
     {
       id: 'databases',
@@ -432,7 +1403,7 @@ const InteractiveQuiz = () => {
       icon: '🗄️',
       description: 'SQL, NoSQL, database design, and data management',
       questionCount: 5,
-      timeLimit: '10 min',
+      timeLimit: '15 min',
       difficulty: 'Beginner to Intermediate'
     },
     {
@@ -443,6 +1414,24 @@ const InteractiveQuiz = () => {
       questionCount: 5,
       timeLimit: '15 min',
       difficulty: 'Advanced'
+    },
+    {
+      id: 'operating_systems',
+      title: 'Operating Systems',
+      icon: '💻',
+      description: 'OS concepts, processes, memory management',
+      questionCount: 6,
+      timeLimit: '15 min',
+      difficulty: 'Intermediate to Advanced'
+    },
+    {
+      id: 'computer_networks',
+      title: 'Computer Networks',
+      icon: '🌐',
+      description: 'Network protocols, architecture, and security',
+      questionCount: 6,
+      timeLimit: '15 min',
+      difficulty: 'Intermediate to Advanced'
     }
   ];
 
@@ -471,9 +1460,23 @@ const InteractiveQuiz = () => {
     console.log('🏁 Finishing quiz...');
     setIsActive(false);
     
-    // Calculate score
+    // Calculate score and time
     let correctAnswers = 0;
     let totalPoints = 0;
+    const quizEndTime = Date.now();
+    const totalTimeSpent = quizStartTime ? Math.floor((quizEndTime - quizStartTime) / 1000) : 0;
+    
+    // Create detailed answer records
+    const answerDetails = quizData.questions.map((question, index) => ({
+      questionId: question.id,
+      question: question.question,
+      selectedAnswer: answers[index],
+      correctAnswer: question.correct_answer,
+      isCorrect: answers[index] === question.correct_answer,
+      difficulty: question.difficulty,
+      topic: question.topic,
+      points: question.points || 10
+    }));
     
     quizData.questions.forEach((question, index) => {
       if (answers[index] === question.correct_answer) {
@@ -482,9 +1485,34 @@ const InteractiveQuiz = () => {
       }
     });
     
-    setScore(totalPoints);
+    // Calculate percentage score
+    const maxPossiblePoints = quizData.questions.reduce((sum, q) => sum + (q.points || 10), 0);
+    const percentageScore = Math.round((totalPoints / maxPossiblePoints) * 100);
+    
+    setScore(percentageScore);
+    
+    // Record quiz completion in analytics
+    const quizResult = {
+      category: selectedCategory,
+      categoryTitle: quizData.title,
+      score: percentageScore,
+      totalQuestions: quizData.questions.length,
+      correctAnswers: correctAnswers,
+      timeSpent: totalTimeSpent,
+      answers: answers,
+      questionDetails: answerDetails,
+      difficulty: 'mixed' // Could be enhanced to calculate based on question difficulties
+    };
+    
+    try {
+      quizAnalyticsService.recordQuizCompletion(quizResult);
+      console.log('📊 Quiz performance recorded successfully');
+    } catch (error) {
+      console.error('Failed to record quiz performance:', error);
+    }
+    
     setShowResults(true);
-  }, [quizData, answers, showResults]);
+  }, [quizData, answers, showResults, selectedCategory, quizStartTime]);
 
   // Start quiz function
   const startQuiz = useCallback(() => {
@@ -495,6 +1523,9 @@ const InteractiveQuiz = () => {
       console.error('Category not found:', selectedCategory);
       return;
     }
+
+    // Record start time for analytics
+    setQuizStartTime(Date.now());
 
     // Shuffle questions for variety
     const shuffledQuestions = [...categoryData.questions].sort(() => Math.random() - 0.5);
@@ -551,25 +1582,67 @@ const InteractiveQuiz = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // Show analytics view
+  if (showAnalytics) {
+    const analyticsData = quizAnalyticsService.getData();
+    return (
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-gray-900">Quiz Performance Analytics</h1>
+            <button
+              onClick={() => setShowAnalytics(false)}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Back to Quiz
+            </button>
+          </div>
+          
+          {/* Analytics Component */}
+          <QuizPerformanceAnalytics 
+            userStats={analyticsData?.userStats || {}}
+            quizHistory={analyticsData?.quizHistory || []}
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Show category selection screen
-  if (showCategorySelection) {
+  if (showCategorySelection && !showAnalytics) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-100 p-4">
         <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Brain className="w-12 h-12 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Comprehensive Programming Quiz</h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Test your knowledge across all major programming concepts. Choose a category to begin your journey!
-            </p>
-          </motion.div>
-
+          {/* Header with Analytics Button */}
+          <div className="flex justify-between items-center mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                🧠 Interactive Quiz System
+              </h1>
+              <p className="text-lg text-gray-600 mb-2">
+                Test your programming knowledge across multiple domains
+              </p>
+              <p className="text-sm text-gray-500">
+                Choose a category below to start your learning journey
+              </p>
+            </motion.div>
+            
+            <motion.button
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={() => setShowAnalytics(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-colors shadow-lg"
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span>View Analytics</span>
+            </motion.button>
+          </div>
+          
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {quizCategories.map((category, index) => (
               <motion.div

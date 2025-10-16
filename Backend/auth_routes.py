@@ -235,6 +235,116 @@ def get_user_analytics():
         print(f"Get analytics endpoint error: {e}")
         return jsonify({'error': 'Failed to get analytics'}), 500
 
+@auth_bp.route('/test-auth', methods=['GET'])
+@require_auth
+def test_auth():
+    """Test endpoint to verify authentication is working"""
+    try:
+        user_id = request.current_user['user_id']
+        user_data = request.current_user
+        
+        return jsonify({
+            'success': True,
+            'message': 'Authentication working',
+            'user_id': user_id,
+            'user_data': user_data
+        }), 200
+        
+    except Exception as e:
+        print(f"Test auth error: {e}")
+        return jsonify({'error': f'Authentication test failed: {str(e)}'}), 500
+
+@auth_bp.route('/dashboard-analytics', methods=['GET'])
+@require_auth
+def get_dashboard_analytics():
+    """Get comprehensive dashboard analytics combining quiz and problem data"""
+    try:
+        user_id = request.current_user['user_id']
+        days = request.args.get('days', 30, type=int)
+        
+        print(f"📊 Dashboard analytics requested for user: {user_id}")
+        
+        # Get comprehensive analytics data with error handling
+        analytics = None
+        submissions = None
+        progress = None
+        skill_analysis = None
+        
+        try:
+            analytics = db_service.get_learning_analytics(user_id, days)
+            print(f"✅ Analytics loaded: {bool(analytics)}")
+        except Exception as e:
+            print(f"❌ Analytics error: {e}")
+            analytics = {}
+        
+        try:
+            submissions = db_service.get_user_code_submissions(user_id, None, 100)
+            print(f"✅ Submissions loaded: {len(submissions) if submissions else 0}")
+        except Exception as e:
+            print(f"❌ Submissions error: {e}")
+            submissions = []
+        
+        try:
+            progress = db_service.get_user_progress(user_id)
+            print(f"✅ Progress loaded: {bool(progress)}")
+        except Exception as e:
+            print(f"❌ Progress error: {e}")
+            progress = {}
+        
+        try:
+            skill_analysis = db_service.get_user_skill_analysis(user_id)
+            print(f"✅ Skill analysis loaded: {bool(skill_analysis)}")
+        except Exception as e:
+            print(f"❌ Skill analysis error: {e}")
+            skill_analysis = {}
+        
+        # Process and combine data safely
+        dashboard_data = {
+            'userStats': {
+                'totalQuizzes': analytics.get('total_attempts', 0) if analytics else 0,
+                'problemsSolved': len([s for s in submissions if s.get('status') == 'accepted']) if submissions else 0,
+                'currentStreak': analytics.get('current_streak', 0) if analytics else 0,
+                'totalScore': int(analytics.get('average_score', 0) * analytics.get('total_attempts', 0)) if analytics else 0,
+                'averageAccuracy': int(analytics.get('success_rate', 0)) if analytics else 0,
+                'studyHours': int((len(submissions) * 15) / 60) if submissions else 0  # Estimate 15 min per problem
+            },
+            'analytics': analytics or {},
+            'submissions': submissions or [],
+            'progress': progress or {},
+            'skillAnalysis': skill_analysis or {}
+        }
+        
+        print(f"📊 Dashboard data prepared successfully")
+        
+        return jsonify({
+            'success': True,
+            'data': dashboard_data
+        }), 200
+        
+    except Exception as e:
+        print(f"❌ Get dashboard analytics endpoint error: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Failed to get dashboard analytics: {str(e)}'}), 500
+
+@auth_bp.route('/progress', methods=['GET'])
+@require_auth
+def get_user_progress():
+    """Get user progress data"""
+    try:
+        user_id = request.current_user['user_id']
+        
+        progress = db_service.get_user_progress(user_id)
+        
+        return jsonify({
+            'success': True,
+            'progress': progress or {}
+        }), 200
+        
+    except Exception as e:
+        print(f"Get progress endpoint error: {e}")
+        return jsonify({'error': 'Failed to get progress'}), 500
+
 @auth_bp.route('/skill-analysis', methods=['GET'])
 @require_auth
 def get_skill_analysis():

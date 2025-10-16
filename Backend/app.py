@@ -24,7 +24,11 @@ from dataclasses import asdict
 import os
 
 app = Flask(__name__)
-CORS(app)
+# Configure CORS with specific settings for development
+CORS(app, origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", "http://localhost:5177"], 
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization", "Accept"],
+     supports_credentials=True)
 
 # Initialize real-time service with SocketIO
 from realtime_service import realtime_service
@@ -1506,6 +1510,54 @@ def get_quiz_categories():
                 'difficulty_levels': ['intermediate', 'advanced'],
                 'question_count': 35,
                 'icon': 'tool'
+            },
+            {
+                'id': 'machine_learning',
+                'name': 'Machine Learning & AI',
+                'description': 'ML algorithms, neural networks, and AI concepts',
+                'difficulty_levels': ['intermediate', 'advanced'],
+                'question_count': 30,
+                'icon': 'brain'
+            },
+            {
+                'id': 'cybersecurity',
+                'name': 'Cybersecurity',
+                'description': 'Security principles, threats, and protection mechanisms',
+                'difficulty_levels': ['beginner', 'intermediate', 'advanced'],
+                'question_count': 25,
+                'icon': 'shield'
+            },
+            {
+                'id': 'mobile_development',
+                'name': 'Mobile Development',
+                'description': 'iOS, Android, and cross-platform development',
+                'difficulty_levels': ['beginner', 'intermediate', 'advanced'],
+                'question_count': 35,
+                'icon': 'mobile'
+            },
+            {
+                'id': 'system_design',
+                'name': 'System Design',
+                'description': 'Scalability, architecture, and distributed systems',
+                'difficulty_levels': ['advanced'],
+                'question_count': 20,
+                'icon': 'architecture'
+            },
+            {
+                'id': 'operating_systems',
+                'name': 'Operating Systems',
+                'description': 'OS concepts, processes, memory management',
+                'difficulty_levels': ['intermediate', 'advanced'],
+                'question_count': 30,
+                'icon': 'computer'
+            },
+            {
+                'id': 'computer_networks',
+                'name': 'Computer Networks',
+                'description': 'Network protocols, architecture, and security',
+                'difficulty_levels': ['intermediate', 'advanced'],
+                'question_count': 25,
+                'icon': 'network'
             }
         ]
         
@@ -2157,6 +2209,218 @@ def invalidate_dashboard_cache(user_id):
         return jsonify({'message': 'Cache invalidated successfully'})
     except Exception as e:
         return jsonify({'error': f'Failed to invalidate cache: {str(e)}'}), 500
+
+@app.route('/api/student/dashboard/<user_id>', methods=['GET'])
+@require_auth
+def get_student_dashboard(user_id):
+    """Get comprehensive student dashboard data optimized for frontend"""
+    try:
+        # Get all user progress and evaluation data from database
+        user_progress = db_service.get_user_progress(user_id)
+        evaluations = db_service.get_user_evaluations(user_id, limit=100)
+        
+        # Calculate basic metrics
+        total_problems_solved = len([e for e in evaluations if e.get('is_correct', False)])
+        total_attempted = len(evaluations)
+        accuracy_rate = (total_problems_solved / total_attempted * 100) if total_attempted > 0 else 0
+        
+        # Get recent activity (last 30 days)
+        thirty_days_ago = datetime.now() - timedelta(days=30)
+        recent_evaluations = [e for e in evaluations if e.get('timestamp', datetime.min) > thirty_days_ago]
+        problems_solved_today = len([e for e in recent_evaluations 
+                                   if e.get('is_correct', False) and 
+                                   e.get('timestamp', datetime.min).date() == datetime.now().date()])
+        
+        # Calculate streak (consecutive days with solved problems)
+        streak_count = 0
+        current_date = datetime.now().date()
+        for i in range(365):  # Check up to 1 year
+            check_date = current_date - timedelta(days=i)
+            day_problems = [e for e in evaluations 
+                          if e.get('is_correct', False) and 
+                          e.get('timestamp', datetime.min).date() == check_date]
+            if day_problems:
+                streak_count += 1
+            elif i > 0:  # Don't break on first day if no problems today
+                break
+        
+        # Analyze concept performance
+        concept_stats = {}
+        for evaluation in evaluations:
+            concept = evaluation.get('concept', 'General')
+            if concept not in concept_stats:
+                concept_stats[concept] = {'attempted': 0, 'solved': 0}
+            concept_stats[concept]['attempted'] += 1
+            if evaluation.get('is_correct', False):
+                concept_stats[concept]['solved'] += 1
+        
+        # Calculate concept progress with mastery levels
+        concept_progress = []
+        for concept, stats in concept_stats.items():
+            mastery_level = (stats['solved'] / stats['attempted'] * 100) if stats['attempted'] > 0 else 0
+            concept_progress.append({
+                'name': concept,
+                'attempted': stats['attempted'],
+                'solved': stats['solved'],
+                'mastery_level': round(mastery_level, 1)
+            })
+        
+        # Sort by mastery level descending
+        concept_progress.sort(key=lambda x: x['mastery_level'], reverse=True)
+        
+        # Find strongest and weakest concepts
+        strongest_concept = concept_progress[0]['name'] if concept_progress else 'N/A'
+        weakest_concept = concept_progress[-1]['name'] if concept_progress else 'N/A'
+        
+        # Calculate study time (estimate based on evaluation timestamps)
+        study_time_today = 0
+        total_study_time = 0
+        if evaluations:
+            # Estimate 5 minutes per problem attempt
+            study_time_today = len([e for e in recent_evaluations 
+                                  if e.get('timestamp', datetime.min).date() == datetime.now().date()]) * 5
+            total_study_time = len(evaluations) * 5
+        
+        # Get difficulty distribution
+        difficulty_stats = {'easy': 0, 'medium': 0, 'hard': 0}
+        for evaluation in evaluations:
+            difficulty = evaluation.get('difficulty', 'medium').lower()
+            if difficulty in difficulty_stats:
+                difficulty_stats[difficulty] += 1
+        
+        # Calculate performance trend (last 7 days vs previous 7 days)
+        last_7_days = [e for e in recent_evaluations 
+                      if e.get('timestamp', datetime.min) > (datetime.now() - timedelta(days=7))]
+        prev_7_days = [e for e in recent_evaluations 
+                      if (datetime.now() - timedelta(days=14)) < e.get('timestamp', datetime.min) <= (datetime.now() - timedelta(days=7))]
+        
+        current_accuracy = len([e for e in last_7_days if e.get('is_correct', False)]) / len(last_7_days) if last_7_days else 0
+        prev_accuracy = len([e for e in prev_7_days if e.get('is_correct', False)]) / len(prev_7_days) if prev_7_days else 0
+        
+        performance_trend = 'improving' if current_accuracy > prev_accuracy else 'declining' if current_accuracy < prev_accuracy else 'stable'
+        
+        # Generate recommendations based on performance
+        recommendations = []
+        if accuracy_rate < 60:
+            recommendations.append("Focus on understanding basic concepts before attempting harder problems")
+        if streak_count == 0:
+            recommendations.append("Try to solve at least one problem daily to build consistency")
+        if weakest_concept != 'N/A' and concept_stats.get(weakest_concept, {}).get('solved', 0) < 3:
+            recommendations.append(f"Practice more {weakest_concept} problems to strengthen this concept")
+        if len(recent_evaluations) < 5:
+            recommendations.append("Increase your practice frequency for better progress")
+        
+        # Create activity timeline
+        activity_timeline = []
+        for evaluation in evaluations[-20:]:  # Last 20 activities
+            activity_timeline.append({
+                'type': 'problem_solved' if evaluation.get('is_correct', False) else 'problem_attempted',
+                'title': f"{'Solved' if evaluation.get('is_correct', False) else 'Attempted'} {evaluation.get('problem_title', 'Unknown Problem')}",
+                'description': f"Concept: {evaluation.get('concept', 'General')}",
+                'timestamp': evaluation.get('timestamp', datetime.now()).isoformat(),
+                'details': f"Difficulty: {evaluation.get('difficulty', 'Unknown')}"
+            })
+        
+        # Prepare skill progress data
+        skill_progress = {}
+        programming_concepts = ['Arrays', 'Strings', 'Loops', 'Functions', 'Recursion', 'Data Structures', 'Algorithms']
+        for concept in programming_concepts:
+            concept_data = concept_stats.get(concept, {'attempted': 0, 'solved': 0})
+            skill_progress[concept.lower()] = {
+                'solved': concept_data['solved'],
+                'total': max(concept_data['attempted'], 10),  # Assume at least 10 problems per concept
+                'mastery_level': (concept_data['solved'] / max(concept_data['attempted'], 1) * 100) if concept_data['attempted'] > 0 else 0
+            }
+        
+        # Prepare comprehensive dashboard response
+        dashboard_response = {
+            'user_info': {
+                'name': user_progress.get('user_name', 'Student'),
+                'level': min(total_problems_solved // 10 + 1, 50),  # Level based on problems solved
+                'experience': total_problems_solved * 10,
+                'next_level_exp': ((total_problems_solved // 10 + 1) * 10) * 10
+            },
+            'metrics': {
+                'total_problems_solved': total_problems_solved,
+                'problems_solved_today': problems_solved_today,
+                'accuracy_rate': round(accuracy_rate, 1),
+                'completion_rate': round((total_problems_solved / max(total_attempted, 1)) * 100, 1),
+                'streak_count': streak_count,
+                'study_time_today': study_time_today,
+                'total_study_time': total_study_time,
+                'average_time_per_problem': 5,  # Estimated average
+                'strongest_concept': strongest_concept,
+                'weakest_concept': weakest_concept,
+                'concepts_mastered': len([c for c in concept_progress if c['mastery_level'] >= 80]),
+                'total_concepts': len(concept_progress),
+                'confidence_score': min(accuracy_rate + (streak_count * 2), 100),
+                'overall_score': total_problems_solved * 10 + (accuracy_rate * 2),
+                'engagement_score': min((problems_solved_today * 20) + (streak_count * 5), 100),
+                'motivation_level': 'high' if accuracy_rate > 80 else 'medium' if accuracy_rate > 60 else 'low'
+            },
+            'progress': {
+                'concept_progress': concept_progress,
+                'skill_progress': skill_progress,
+                'concept_breakdown': concept_stats,
+                'difficulty_distribution': difficulty_stats,
+                'mastery_percentage': round(len([c for c in concept_progress if c['mastery_level'] >= 80]) / max(len(concept_progress), 1) * 100, 1)
+            },
+            'performance': {
+                'chart_data': [
+                    {'date': (datetime.now() - timedelta(days=i)).strftime('%Y-%m-%d'), 
+                     'score': len([e for e in recent_evaluations 
+                                 if e.get('timestamp', datetime.min).date() == (datetime.now() - timedelta(days=i)).date() and e.get('is_correct', False)]) * 10}
+                    for i in range(7, -1, -1)
+                ],
+                'performance_trend': performance_trend,
+                'recent_performance': current_accuracy * 100
+            },
+            'activity': {
+                'timeline': activity_timeline
+            },
+            'trends': {
+                'problems_trend': performance_trend,
+                'score_trend': performance_trend,
+                'accuracy_trend': current_accuracy - prev_accuracy
+            },
+            'alerts': [
+                {
+                    'title': 'Great Progress!',
+                    'message': f'You have solved {total_problems_solved} problems so far!',
+                    'severity': 'info'
+                }
+            ] if total_problems_solved > 0 else [
+                {
+                    'title': 'Get Started',
+                    'message': 'Start solving problems to track your progress!',
+                    'severity': 'info'
+                }
+            ],
+            'recommendations': recommendations,
+            'last_updated': datetime.now().isoformat()
+        }
+        
+        return jsonify(dashboard_response)
+        
+    except Exception as e:
+        print(f"Error in student dashboard endpoint: {e}")
+        # Return fallback data if there's an error
+        return jsonify({
+            'user_info': {'name': 'Student', 'level': 1, 'experience': 0, 'next_level_exp': 100},
+            'metrics': {
+                'total_problems_solved': 0, 'problems_solved_today': 0, 'accuracy_rate': 0,
+                'completion_rate': 0, 'streak_count': 0, 'study_time_today': 0, 'total_study_time': 0,
+                'strongest_concept': 'N/A', 'weakest_concept': 'N/A', 'concepts_mastered': 0,
+                'total_concepts': 0, 'confidence_score': 0, 'overall_score': 0
+            },
+            'progress': {'concept_progress': [], 'skill_progress': {}, 'concept_breakdown': {}},
+            'performance': {'chart_data': [], 'performance_trend': 'stable'},
+            'activity': {'timeline': []},
+            'trends': {'problems_trend': 'stable', 'score_trend': 'stable'},
+            'alerts': [{'title': 'Welcome', 'message': 'Start your learning journey!', 'severity': 'info'}],
+            'recommendations': ['Start solving problems to get personalized recommendations'],
+            'last_updated': datetime.now().isoformat()
+        })
 
 # Analytics Service Endpoints
 @app.route('/api/analytics/performance/<user_id>', methods=['GET'])

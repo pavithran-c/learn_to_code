@@ -15,6 +15,9 @@ import ProgrammingQuiz from './components/ProgrammingQuiz'
 import CompetitiveQuiz from './components/CompetitiveQuiz'
 import CoreSubjectsQuiz from './components/CoreSubjectsQuiz'
 import RealTimeDashboard from './components/SimplifiedDashboard'
+import StudentDashboard from './components/StudentDashboard'
+import AnalyticsDashboard from './components/AnalyticsDashboard'
+import TestAnalytics from './components/TestAnalytics'
 
 // Component to handle navbar visibility
 function AppContent() {
@@ -41,9 +44,15 @@ function AppContent() {
         <Route path='/competitive-quiz-demo' element={<CompetitiveQuiz />} />
         <Route path='/core-subjects-quiz-demo' element={<CoreSubjectsQuiz />} />
         <Route path='/evaluations' element={<RealTimeDashboard />} />
+        <Route path='/test-analytics' element={<TestAnalytics />} />
         
         {/* Protected routes - require authentication */}
         <Route path='/dashboard' element={
+          <ProtectedRoute>
+            <AnalyticsDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path='/evaluations' element={
           <ProtectedRoute>
             <RealTimeDashboard />
           </ProtectedRoute>
