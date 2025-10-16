@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 const AuthContext = createContext();
 
 // API Base URL
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5000';
 
 // Custom hook to use auth context
 export const useAuth = () => {
@@ -181,36 +181,57 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      console.log('🔄 AuthContext: Attempting login for:', email);
+      console.log('🔗 API URL:', `${API_BASE_URL}/api/auth/login`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ 
+          email: email.trim().toLowerCase(), 
+          password: password 
+        })
       });
 
-      const data = await response.json();
+      console.log('📡 Response status:', response.status);
 
-      if (data.success) {
-        const { user, access_token, refresh_token } = data;
+      const data = await response.json();
+      console.log('📡 Response data:', data);
+
+      if (response.ok && data.success) {
+        // Store tokens and user data correctly
+        setToken(data.access_token);
+        setRefreshToken(data.refresh_token);
+        setUser(data.user);
         
-        // Store tokens and user data
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('access_token', data.access_token);
+        localStorage.setItem('refresh_token', data.refresh_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
         
-        setToken(access_token);
-        setUser(user);
+        if (rememberMe) {
+          localStorage.setItem('rememberUser', 'true');
+        }
         
-        return { success: true, user };
+        // Set session expiry
+        const expiryTime = Date.now() + (data.expires_in * 1000);
+        setSessionExpiry(expiryTime);
+        
+        console.log('✅ Login successful');
+        return { success: true, user: data.user };
       } else {
-        return { success: false, error: data.error };
+        console.log('❌ Login failed:', data.error);
+        return { success: false, error: data.error || 'Login failed' };
       }
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'Network error. Please try again.' };
+      console.error('❌ Network error during login:', error);
+      return { 
+        success: false, 
+        error: 'Network error. Please check if the backend server is running on http://localhost:5000' 
+      };
     }
   };
 

@@ -47,7 +47,7 @@ const Login = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value) ? '' : 'Please enter a valid email address';
       case 'password':
-        return value.length >= 6 ? '' : 'Password must be at least 6 characters';
+        return value.length >= 1 ? '' : 'Password is required'; // Changed from 6 to 1
       default:
         return '';
     }
@@ -72,11 +72,18 @@ const Login = () => {
     }
   };
 
+  // Consolidated submit handler with detailed logging
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('🔄 Login form submitted');
+    console.log('📧 Email:', formData.email);
+    console.log('🔐 Password length:', formData.password.length);
+    
     if (isBlocked) {
-      setErrors({ general: `Too many failed attempts. Please wait ${blockTimer} seconds.` });
+      const errorMsg = `Too many failed attempts. Please wait ${blockTimer} seconds.`;
+      console.log('🚫 Account blocked:', errorMsg);
+      setErrors({ general: errorMsg });
       return;
     }
     
@@ -88,6 +95,7 @@ const Login = () => {
     const passwordError = validateField('password', formData.password);
     
     if (emailError || passwordError) {
+      console.log('❌ Validation errors:', { emailError, passwordError });
       setErrors({
         email: emailError,
         password: passwordError
@@ -96,26 +104,40 @@ const Login = () => {
       return;
     }
 
-    const result = await login(formData.email, formData.password, formData.rememberMe);
-    
-    if (result.success) {
-      // Reset login attempts on successful login
-      setLoginAttempts(0);
-      navigate(from, { replace: true });
-    } else {
-      const newAttempts = loginAttempts + 1;
-      setLoginAttempts(newAttempts);
+    try {
+      console.log('🔄 Calling auth context login...');
+      const result = await login(formData.email, formData.password, formData.rememberMe);
       
-      if (newAttempts >= 5) {
-        setIsBlocked(true);
-        setBlockTimer(300); // 5 minutes
-        setErrors({ general: 'Too many failed attempts. Account temporarily locked for 5 minutes.' });
+      console.log('📡 Login result received:', result);
+      
+      if (result.success) {
+        console.log('✅ Login successful, redirecting to:', from);
+        // Reset login attempts on successful login
+        setLoginAttempts(0);
+        navigate(from, { replace: true });
       } else {
-        setErrors({ general: result.error || 'Login failed. Please try again.' });
+        console.log('❌ Login failed with error:', result.error);
+        const newAttempts = loginAttempts + 1;
+        setLoginAttempts(newAttempts);
+        
+        if (newAttempts >= 5) {
+          setIsBlocked(true);
+          setBlockTimer(300); // 5 minutes
+          setErrors({ general: 'Too many failed attempts. Account temporarily locked for 5 minutes.' });
+        } else {
+          setErrors({ 
+            general: result.error || 'Login failed. Please check your credentials and try again.' 
+          });
+        }
       }
+    } catch (error) {
+      console.error('❌ Network/Auth error:', error);
+      setErrors({ 
+        general: 'Network error. Please check if the backend server is running on http://localhost:5000' 
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const handleSocialLogin = async (provider) => {
@@ -160,113 +182,162 @@ const Login = () => {
           >
             <Code className="h-10 w-10 text-white" />
           </motion.div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
             Sign in to your account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-300">
             Or{' '}
             <Link
               to="/register"
-              className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
+              className="font-medium text-blue-400 hover:text-blue-300 transition-colors"
             >
               create a new account
             </Link>
           </p>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-colors"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-colors"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
 
-          {errors.general && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <div className="flex">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <span className="ml-2 text-sm text-red-600">{errors.general}</span>
+        {/* Login Form Card */}
+        <motion.div 
+          className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-8 border border-white/20"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+        >
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-300/30 bg-white/10 backdrop-blur-sm placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    className="block w-full pl-10 pr-12 py-3 border border-gray-300/30 bg-white/10 backdrop-blur-sm placeholder-gray-400 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-300" />
+                    )}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+                )}
               </div>
             </div>
-          )}
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Signing in...
-                </>
-              ) : (
-                'Sign in'
+            {/* Error Display */}
+            <AnimatePresence>
+              {errors.general && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 backdrop-blur-sm"
+                >
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+                    <span className="text-sm text-red-300">{errors.general}</span>
+                  </div>
+                </motion.div>
               )}
-            </button>
-          </div>
+            </AnimatePresence>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Demo Credentials: test@example.com / SecurePassword123
-            </p>
-          </div>
-        </form>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input
+                  id="rememberMe"
+                  name="rememberMe"
+                  type="checkbox"
+                  checked={formData.rememberMe}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white/10"
+                />
+                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-300">
+                  Remember me
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <Link 
+                  to="/forgot-password" 
+                  className="font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+            </div>
+
+            <div>
+              <motion.button
+                type="submit"
+                disabled={loading || isBlocked}
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
+                whileHover={{ scale: loading ? 1 : 1.02 }}
+                whileTap={{ scale: loading ? 1 : 0.98 }}
+              >
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  {loading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    <ArrowRight className="h-5 w-5 text-white/70 group-hover:text-white transition-colors" />
+                  )}
+                </span>
+                {loading ? 'Signing in...' : 'Sign in'}
+              </motion.button>
+            </div>
+
+            {/* Demo Credentials */}
+            <div className="text-center">
+              <p className="text-xs text-gray-400 bg-white/5 rounded-lg p-2 border border-white/10">
+                <strong>Demo Credentials:</strong><br />
+                Email: test@example.com<br />
+                Password: password123
+              </p>
+            </div>
+          </form>
+        </motion.div>
       </motion.div>
     </div>
   );
